@@ -1,82 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" charset="UTF-8">
-    <title>K.P</title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        html {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            text-rendering: optimizeLegibility;
-            overflow-x: hidden;
-            overflow-y: hidden;
-        }
-
-        body {
-            margin: 0 auto;
-            min-height: 100vh;
-            max-width: 400px; 
-            text-align: center;
-        }
-
-        table {
-            margin: auto;
-            width: 65%;
-            font-size: 12px;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 8px 12px;
-            text-align: center;
-            border-bottom: 1px solid #e0e0e0;
-            border-top: 1px solid #d0d0d0;
-        }
-
-        a[href]{
-            color: rgb(69, 69, 69);
-        }
-    </style>
-</head>
-
 <html>
-    <body>
-        <div style="font-weight: bold; font-size: 22px; margin-top: 10%; margin-bottom: 5%;">
-            INVESTMENTS
-        </div>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kim</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 
-        <div style="font-size: 12px; margin-bottom: 5%;">
-            Overall Gain - 33.4%
-        </div>
+<!-- ============================================================
+  EDITABLE — change everything in this block freely
+  ============================================================ -->
+<script>
 
-        <table>
-            
-        <tr>
-            <td style="width: 150px;">2026</td>
-            <td style="width: 150px;"><a>Q1</a></td>
-            <td style="width: 150px;"><a></a></td>
-            <td style="width: 150px;"><a></a></td>
-            <td style="width: 150px;"><a></a></td>
-        </tr>
-        <tr>
-            <td style="width: 150px;">2025</td>
-            <td style="width: 150px;"><a href="invest\250331.pdf">Q1</a></td>
-            <td style="width: 150px;"><a href="invest\250630.pdf">Q2</a></td>
-            <td style="width: 150px;"><a href="invest\250930.pdf">Q3</a></td>
-            <td style="width: 150px;"><a href="invest\251231.pdf">Year</a></td>
-        </tr>
-        <tr>
-            <td style="width: 150px;">2024</td>
-            <td style="width: 150px;"></td>
-            <td style="width: 150px;"></td>
-            <td style="width: 150px;"><a href="invest\240930.pdf">Q3</a></td>
-            <td style="width: 150px;"><a href="invest\241231.pdf">Year</a></td>
-        </tr>
-        </table>
+/* ── Identity ── */
+const NAME     = "SE KWANG (PETER), KIM";
+const ROLE     = "Electrical Engineer";
+const BIO      = "Electrical consulting, embedded hardware, and software for automation and control.";
+const TIMEZONE = "Asia/Seoul";
+const CITY     = "Seoul";
 
-        <div style="font-size: 10px; margin-top: 5%;">
-            Copyright &copy; 2024-2026 <a href = "https://x.com/_kpeter12">K.P</p>
-        </div>
-    </body>
+/* ── Work entries ─────────────────────────────────────────────
+   year      number   e.g. 2026
+   category  string   shown on the left  e.g. "Construction"
+   title     string   shown in the middle
+   date      string   shown on the right e.g. "05/09"
+   href      string   relative path or full URL
+   ────────────────────────────────────────────────────────── */
+const DATA = [
+  { year: 2026, category: "Construction", title: "Temporary power layouts",       date: "05/09", href: "construction/site-layouts.html"      },
+  { year: 2026, category: "Construction", title: "Distribution planning systems", date: "04/14", href: "construction/distribution.html"       },
+  { year: 2026, category: "Hardware",     title: "Motor driver PCB",              date: "03/28", href: "https://github.com/yourname/motor-driver"      },
+  { year: 2026, category: "Hardware",     title: "Sensor reliability testing",    date: "02/11", href: "https://github.com/yourname/sensor-testing"    },
+  { year: 2026, category: "Software",     title: "Monitoring dashboard",          date: "01/22", href: "https://github.com/yourname/dashboard"         },
+  { year: 2025, category: "Construction", title: "Load calculation references",   date: "11/08", href: "construction/load-calculations.html"  },
+  { year: 2025, category: "Software",     title: "Embedded software notes",       date: "08/14", href: "https://github.com/yourname/embedded-notes"    },
+];
+
+</script>
+<!-- ============================================================
+  END EDITABLE
+  ============================================================ -->
+
+
+
+
+<!-- ============================================================
+  BACKEND — no need to touch below
+  ============================================================ -->
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Shared tokens — keep in sync with example.html ──────────
+     max-width:   500px
+     padding:     0 20px
+     font-size:   13px
+     line-height: 1.7
+     margin-top:  80px here / 40px in example (has ← back link)
+  ────────────────────────────────────────────────────────── */
+  body {
+    font-family: Inter, sans-serif;
+    background: #fff;
+    color: #111;
+    max-width: 500px;
+    margin: 80px auto;
+    padding: 0 20px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .gray  { color: #777; }
+  .bio   { margin-top: 40px; }
+
+  .group       { margin-top: 45px; }
+  .group-label { margin-bottom: 12px; color: #777; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 110px 1fr 70px;
+    gap: 15px;
+    padding: 10px 0;
+    border-top: 1px solid #e5e5e5;
+    transition: background .15s, padding-left .15s;
+  }
+  .row:hover, .row:active { background: #f5f5f5; padding-left: 8px; }
+
+  .row-cat  { color: #777; }
+  .row-date { text-align: right; color: #777; }
+
+  .footer { margin-top: 80px; color: #777; }
+
+  @media (max-width: 640px) {
+    .row { grid-template-columns: 90px 1fr 55px; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="j-name"></div>
+  <div class="gray" id="j-role"></div>
+  <div class="bio gray" id="j-bio"></div>
+  <div id="j-groups"></div>
+  <div class="footer" id="j-time"></div>
+
+<script>
+  /* ── Populate identity ── */
+  document.getElementById("j-name").textContent = NAME;
+  document.getElementById("j-role").textContent = ROLE;
+  document.getElementById("j-bio").textContent  = BIO;
+
+  /* ── Build work groups ── */
+  const allYears = [...new Set(DATA.map(d => d.year))].sort((a, b) => b - a);
+  const container = document.getElementById("j-groups");
+
+  allYears.forEach(yr => {
+    const entries = DATA.filter(d => d.year === yr);
+
+    const group = document.createElement("div");
+    group.className = "group";
+
+    const label = document.createElement("div");
+    label.className   = "group-label";
+    label.textContent = yr;
+    group.appendChild(label);
+
+    entries.forEach(d => {
+      const a = document.createElement("a");
+      a.className = "row";
+      a.href      = d.href;
+      a.innerHTML = `
+        <div class="row-cat">${d.category}</div>
+        <div>${d.title}</div>
+        <div class="row-date">${d.date}</div>`;
+      group.appendChild(a);
+    });
+
+    container.appendChild(group);
+  });
+
+  /* ── Live clock ── */
+  function updateTime() {
+    const now  = new Date();
+    const time = now.toLocaleTimeString("en-GB",  { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit" });
+    const date = now.toLocaleDateString("en-US",  { timeZone: TIMEZONE, month: "short", day: "numeric", year: "numeric" });
+    document.getElementById("j-time").textContent = `${time} in ${CITY} — ${date}`;
+  }
+  updateTime();
+  setInterval(updateTime, 30000);
+</script>
+<!-- END BACKEND -->
+
+</body>
 </html>
