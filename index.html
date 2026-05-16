@@ -1,154 +1,368 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kim</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 
-<!-- ============================================================
-  EDITABLE — change everything in this block freely
-  ============================================================ -->
+<title>Kim</title>
+
+<link rel="stylesheet"
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
+
+<style>
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  max-width: 550px;
+  margin: 60px auto;
+  padding: 0 20px;
+
+  font: 12px/1.7 Inter, sans-serif;
+
+  background: #fff;
+  color: #111;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.gray {
+  color: #777;
+}
+
+.bio {
+  margin-top: 40px;
+}
+
+.timeline {
+  margin-top: 50px;
+}
+
+.timeline-year {
+  margin: 38px 0 10px;
+
+  font-size: 12px;
+  color: #777;
+}
+
+.entry {
+  display: block;
+
+  padding: 10px 0;
+
+  border-top: 1px solid #e5e5e5;
+
+  transition:
+    background .15s,
+    padding-left .15s;
+}
+
+.entry:hover {
+  background: #f5f5f5;
+  padding-left: 6px;
+}
+
+.entry-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  flex-wrap: wrap;
+}
+
+.entry-title {
+  color: #111;
+}
+
+.entry-category {
+  font-size: 11px;
+  color: #777;
+}
+
+.entry-description {
+  margin-top: 2px;
+
+  font-size: 12px;
+  line-height: 1.6;
+  color: #777;
+}
+
+.footer {
+  margin-top: 80px;
+  color: #777;
+}
+
+</style>
+
 <script>
 
-/* ── Identity ── */
-const NAME     = "SE KWANG (PETER), KIM";
-const ROLE     = "Electrical Engineer";
-const BIO      = "Electrical consulting, embedded hardware, and software for automation and control.";
-const TIMEZONE = "Asia/Seoul";
-const CITY     = "Seoul";
+/* ────────────────────────────────────────── */
+/* Identity                                   */
+/* ────────────────────────────────────────── */
 
-/* ── Work entries ─────────────────────────────────────────────
-   year      number   e.g. 2026
-   category  string   shown on the left  e.g. "Construction"
-   title     string   shown in the middle
-   date      string   shown on the right e.g. "05/09"
-   href      string   relative path or full URL
-   ────────────────────────────────────────────────────────── */
-const DATA = [
-  { year: 2026, category: "Construction", title: "Temporary power layouts",       date: "05/09", href: "construction/site-layouts.html"      },
-  { year: 2026, category: "Construction", title: "Distribution planning systems", date: "04/14", href: "construction/distribution.html"       },
-  { year: 2026, category: "Hardware",     title: "Motor driver PCB",              date: "03/28", href: "https://github.com/yourname/motor-driver"      },
-  { year: 2026, category: "Hardware",     title: "Sensor reliability testing",    date: "02/11", href: "https://github.com/yourname/sensor-testing"    },
-  { year: 2026, category: "Software",     title: "Monitoring dashboard",          date: "01/22", href: "https://github.com/yourname/dashboard"         },
-  { year: 2025, category: "Construction", title: "Load calculation references",   date: "11/08", href: "construction/load-calculations.html"  },
-  { year: 2025, category: "Software",     title: "Embedded software notes",       date: "08/14", href: "https://github.com/yourname/embedded-notes"    },
+const NAME = "SE KWANG (PETER), KIM";
+
+const ROLE = "Engineer";
+
+const BIO =
+  "Electrical consulting, embedded hardware, and software for automation and control.";
+
+const TIMEZONE = "Asia/Seoul";
+
+const CITY = "Seoul";
+
+/* ────────────────────────────────────────── */
+/* Data                                       */
+/* ────────────────────────────────────────── */
+
+const PROJECTS = [
+
+  {
+    year: 2025,
+    title: "EE Capstone",
+    description:
+      "A custom-built autonomous drone for ICON Lab at Columbia.",
+    href:
+      "https://github.com/tprhkd/SmartStreetLight"
+  },
+
+  {
+    year: 2025,
+    title: "Smart Street Light",
+    description:
+      "Led the net-zero smart street light project.",
+    href:
+      "https://github.com/tprhkd/SmartStreetLight"
+  },
+
+  {
+    year: 2025,
+    title: "Polaris",
+    description:
+      "Led firmware for a communication module for an autonomous sailboat.",
+    href:
+      "https://github.com/UBCSailbot/com-module-firmware/tree/main"
+  },
+
+  {
+    year: 2024,
+    title: "UBC Smart City",
+    description:
+      "Led an engineering design team. Increased the budget by 50%.",
+    href:
+      "assets/sc_annual_23.pdf"
+  },
+
+  {
+    year: 2024,
+    title: "EE Deep Learning I",
+    description:
+      "Implementation of Conditional PixelCNN++",
+    href:
+      "https://github.com/tprhkd/Deep-Learning/blob/main/CPEN355_Final.pdf"
+  },
+
+  {
+    year: 2024,
+    title: "Energy Forecasting",
+    description:
+      "Led the study of energy usage intensity forecasting for MURC 2024.",
+    href:
+      "https://github.com/tprhkd/EUI_Model"
+  },
+
+  {
+    year: 2023,
+    title: "Third-Space",
+    description:
+      "Led the smart home system design for the US Solar Decathlon 2023.",
+    href:
+      "https://www.thirdquadrantdesign.com/third-space"
+  },
+
+  {
+    year: 2023,
+    title: "EE Design Studio II",
+    description:
+      "Developed a digital communication system on DE1-SoC.",
+    href:
+      "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-II"
+  },
+
+  {
+    year: 2022,
+    title: "EE Design Studio I",
+    description:
+      "Built capacitive circuits and coin collecting robot with Intel 8051.",
+    href:
+      "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-I"
+  }
+
 ];
 
-</script>
-<!-- ============================================================
-  END EDITABLE
-  ============================================================ -->
+const WRITING = [
 
+  {
+    year: 2026,
+    title: "Temporary power layouts",
+    description:
+      "Field references for temporary electrical installation planning.",
+    href:
+      "technicals/site-layouts.html"
+  },
 
+];
 
+/* ────────────────────────────────────────── */
+/* Merge + Sort                               */
+/* ────────────────────────────────────────── */
 
-<!-- ============================================================
-  BACKEND — no need to touch below
-  ============================================================ -->
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+const ITEMS = [
 
-  /* ── Shared tokens — keep in sync with example.html ──────────
-     max-width:   500px
-     padding:     0 20px
-     font-size:   13px
-     line-height: 1.7
-     margin-top:  80px here / 40px in example (has ← back link)
-  ────────────────────────────────────────────────────────── */
-  body {
-    font-family: Inter, sans-serif;
-    background: #fff;
-    color: #111;
-    max-width: 500px;
-    margin: 80px auto;
-    padding: 0 20px;
-    font-size: 13px;
-    line-height: 1.7;
-  }
+  ...PROJECTS.map(item => ({
+    ...item,
+    category: "Project"
+  })),
 
-  a { color: inherit; text-decoration: none; }
+  ...WRITING.map(item => ({
+    ...item,
+    category: "Writing"
+  }))
 
-  .gray  { color: #777; }
-  .bio   { margin-top: 40px; }
+].sort((a, b) => b.year - a.year);
 
-  .group       { margin-top: 45px; }
-  .group-label { margin-bottom: 12px; color: #777; }
+/* ────────────────────────────────────────── */
+/* Render                                     */
+/* ────────────────────────────────────────── */
 
-  .row {
-    display: grid;
-    grid-template-columns: 110px 1fr 70px;
-    gap: 15px;
-    padding: 10px 0;
-    border-top: 1px solid #e5e5e5;
-    transition: background .15s, padding-left .15s;
-  }
-  .row:hover, .row:active { background: #f5f5f5; padding-left: 8px; }
+document.addEventListener("DOMContentLoaded", () => {
 
-  .row-cat  { color: #777; }
-  .row-date { text-align: right; color: #777; }
+  setIdentity();
 
-  .footer { margin-top: 80px; color: #777; }
+  renderTimeline();
 
-  @media (max-width: 640px) {
-    .row { grid-template-columns: 90px 1fr 55px; gap: 10px; }
-  }
-</style>
-</head>
-<body>
+  updateTime();
 
-  <div id="j-name"></div>
-  <div class="gray" id="j-role"></div>
-  <div class="bio gray" id="j-bio"></div>
-  <div id="j-groups"></div>
-  <div class="footer" id="j-time"></div>
+  setInterval(updateTime, 30000);
 
-<script>
-  /* ── Populate identity ── */
-  document.getElementById("j-name").textContent = NAME;
-  document.getElementById("j-role").textContent = ROLE;
-  document.getElementById("j-bio").textContent  = BIO;
+});
 
-  /* ── Build work groups ── */
-  const allYears = [...new Set(DATA.map(d => d.year))].sort((a, b) => b - a);
-  const container = document.getElementById("j-groups");
+function setIdentity() {
 
-  allYears.forEach(yr => {
-    const entries = DATA.filter(d => d.year === yr);
+  document.getElementById("name").textContent = NAME;
 
-    const group = document.createElement("div");
-    group.className = "group";
+  document.getElementById("role").textContent = ROLE;
 
-    const label = document.createElement("div");
-    label.className   = "group-label";
-    label.textContent = yr;
-    group.appendChild(label);
+  document.getElementById("bio").textContent = BIO;
 
-    entries.forEach(d => {
-      const a = document.createElement("a");
-      a.className = "row";
-      a.href      = d.href;
-      a.innerHTML = `
-        <div class="row-cat">${d.category}</div>
-        <div>${d.title}</div>
-        <div class="row-date">${d.date}</div>`;
-      group.appendChild(a);
-    });
+}
 
-    container.appendChild(group);
+function renderTimeline() {
+
+  const container =
+    document.getElementById("timeline");
+
+  let currentYear = null;
+
+  ITEMS.forEach(item => {
+
+    if (item.year !== currentYear) {
+
+      currentYear = item.year;
+
+      const year =
+        document.createElement("div");
+
+      year.className = "timeline-year";
+
+      year.textContent = currentYear;
+
+      container.appendChild(year);
+
+    }
+
+    const entry =
+      document.createElement("a");
+
+    entry.className = "entry";
+
+    entry.href = item.href;
+
+    entry.innerHTML = `
+
+      <div class="entry-top">
+
+        <span class="entry-title">
+          ${item.title}
+        </span>
+
+        <span class="entry-category">
+          ${item.category}
+        </span>
+
+      </div>
+
+      <div class="entry-description">
+        ${item.description}
+      </div>
+
+    `;
+
+    container.appendChild(entry);
+
   });
 
-  /* ── Live clock ── */
-  function updateTime() {
-    const now  = new Date();
-    const time = now.toLocaleTimeString("en-GB",  { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit" });
-    const date = now.toLocaleDateString("en-US",  { timeZone: TIMEZONE, month: "short", day: "numeric", year: "numeric" });
-    document.getElementById("j-time").textContent = `${time} in ${CITY} — ${date}`;
-  }
-  updateTime();
-  setInterval(updateTime, 30000);
+}
+
+function updateTime() {
+
+  const now = new Date();
+
+  const time =
+    now.toLocaleTimeString("en-GB", {
+      timeZone: TIMEZONE,
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  const date =
+    now.toLocaleDateString("en-US", {
+      timeZone: TIMEZONE,
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+
+  document.getElementById("time").textContent =
+    `${time} in ${CITY} — ${date}`;
+
+}
+
 </script>
-<!-- END BACKEND -->
+
+</head>
+
+<body>
+
+<div id="name"></div>
+
+<div id="role" class="gray"></div>
+
+<div id="bio" class="bio gray"></div>
+
+<div id="timeline" class="timeline"></div>
+
+<div id="time" class="footer"></div>
 
 </body>
+
 </html>
