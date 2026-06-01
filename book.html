@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notebook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
+
+<!-- ============================================================
+  EDITABLE
+  ============================================================ -->
+<script>
+
+const TITLE       = "Notebook";
+const DESCRIPTION = "Notes on electrical engineering, systems, and research.";
+const BACK        = "../index.html";
+
+/* ── Notes ────────────────────────────────────────────────────
+   date     : display string  e.g. "May 2026"
+   title    : note title
+   description : one-line summary
+   tag      : category label  e.g. "Power", "ML", "Field"
+   href     : path to .html or .pdf
+   ────────────────────────────────────────────────────────── */
+const NOTES = [
+
+  {
+    date: "May 2026",
+    title: "Temporary power layouts",
+    description: "Field references for temporary electrical installation planning.",
+    tag: "Field",
+    href: "temporary-power.html"
+  },
+
+];
+
+</script>
+<!-- ============================================================
+  END EDITABLE
+  ============================================================ -->
+
+
+
+
+<!-- ============================================================
+  BACKEND
+  ============================================================ -->
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  max-width: 760px;
+  margin: 70px auto;
+  padding: 0 20px;
+  font: 12px/1.7 Inter, sans-serif;
+  background: #fff;
+  color: #111;
+}
+
+a { color: inherit; text-decoration: none; }
+.gray { color: #777; }
+
+.back { display: inline-block; margin-bottom: 40px; color: #777; }
+.back:hover { color: #111; }
+
+h1 { font-size: 12px; font-weight: 400; }
+.desc { color: #777; margin-top: 2px; margin-bottom: 50px; }
+
+/* tag filter */
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.filter-btn {
+  font: 11px/1 Inter, sans-serif;
+  background: none;
+  border: 1px solid #e5e5e5;
+  color: #777;
+  border-radius: 3px;
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: all .12s;
+}
+.filter-btn:hover { border-color: #bbb; color: #111; }
+.filter-btn.on { background: #111; border-color: #111; color: #fff; }
+
+/* notes list */
+.notes { margin-top: 0; }
+
+.note {
+  display: block;
+  padding: 10px 0;
+  border-top: 1px solid #e5e5e5;
+  transition: background .15s, padding-left .15s;
+}
+.note:hover { background: #f5f5f5; padding-left: 6px; }
+.note:last-child { border-bottom: 1px solid #e5e5e5; }
+
+.note-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.note-title { color: #111; }
+.note-tag   { font-size: 11px; color: #777; }
+.note-date  { font-size: 11px; color: #aaa; margin-left: auto; }
+
+.note-desc {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #777;
+}
+
+.empty {
+  padding: 32px 0;
+  color: #aaa;
+  font-size: 12px;
+}
+
+.footer { margin-top: 80px; color: #777; }
+
+</style>
+</head>
+<body>
+
+  <a class="back" id="j-back">← back</a>
+
+  <div id="j-title"></div>
+  <div class="desc gray" id="j-desc"></div>
+
+  <div class="filters" id="j-filters"></div>
+  <div class="notes"   id="j-notes"></div>
+
+  <div class="footer"  id="j-time"></div>
+
+<script>
+
+  document.getElementById("j-back").href        = BACK;
+  document.getElementById("j-title").textContent = TITLE;
+  document.getElementById("j-desc").textContent  = DESCRIPTION;
+
+  /* ── Tag filter ── */
+  const allTags = ["All", ...new Set(NOTES.map(n => n.tag))];
+  let activeTag = "All";
+
+  const filtersEl = document.getElementById("j-filters");
+  allTags.forEach(tag => {
+    const b = document.createElement("button");
+    b.className   = "filter-btn" + (tag === "All" ? " on" : "");
+    b.textContent = tag;
+    b.onclick = () => {
+      activeTag = tag;
+      document.querySelectorAll(".filter-btn").forEach(x => x.classList.remove("on"));
+      b.classList.add("on");
+      render();
+    };
+    filtersEl.appendChild(b);
+  });
+
+  /* ── Render notes ── */
+  const notesEl = document.getElementById("j-notes");
+
+  function render() {
+    const filtered = activeTag === "All" ? NOTES : NOTES.filter(n => n.tag === activeTag);
+    notesEl.innerHTML = "";
+
+    if (!filtered.length) {
+      notesEl.innerHTML = '<div class="empty">No notes in this category yet.</div>';
+      return;
+    }
+
+    filtered.forEach(n => {
+      const a = document.createElement("a");
+      a.className = "note";
+      a.href      = n.href;
+      /* open PDFs in new tab, html notes in same tab */
+      if (n.href.endsWith(".pdf")) a.target = "_blank";
+      a.innerHTML = `
+        <div class="note-top">
+          <span class="note-title">${n.title}</span>
+          <span class="note-tag">${n.tag}</span>
+          <span class="note-date">${n.date}</span>
+        </div>
+        <div class="note-desc">${n.description}</div>`;
+      notesEl.appendChild(a);
+    });
+  }
+
+  render();
+
+  /* ── Clock (matches index.html) ── */
+  const TIMEZONE = "Asia/Seoul";
+  const CITY     = "Seoul";
+
+  function updateTime() {
+    const now  = new Date();
+    const time = now.toLocaleTimeString("en-GB", { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit" });
+    const date = now.toLocaleDateString("en-US",  { timeZone: TIMEZONE, month: "short", day: "numeric", year: "numeric" });
+    document.getElementById("j-time").textContent = `${time} in ${CITY} — ${date}`;
+  }
+  updateTime();
+  setInterval(updateTime, 30000);
+
+</script>
+<!-- END BACKEND -->
+
+</body>
+</html>

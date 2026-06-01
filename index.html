@@ -20,8 +20,8 @@ href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 }
 
 body {
-  max-width: 550px;
-  margin: 60px auto;
+  max-width: 760px;
+  margin: 70px auto;
   padding: 0 20px;
 
   font: 12px/1.7 Inter, sans-serif;
@@ -39,16 +39,16 @@ a {
   color: #777;
 }
 
-.bio {
-  margin-top: 40px;
-}
-
 .timeline {
   margin-top: 50px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px 28px;
 }
 
 .timeline-year {
-  margin: 38px 0 10px;
+  margin-bottom: 10px;
 
   font-size: 12px;
   color: #777;
@@ -101,6 +101,14 @@ a {
   color: #777;
 }
 
+@media (max-width: 640px) {
+
+  .timeline {
+    grid-template-columns: 1fr;
+  }
+
+}
+
 </style>
 
 <script>
@@ -111,137 +119,115 @@ a {
 
 const NAME = "SE KWANG (PETER), KIM";
 
-const ROLE = "Engineer";
-
-const BIO =
-  "Electrical consulting, embedded hardware, and software for automation and control.";
+const ROLE = "Electrical Engineer";
 
 const TIMEZONE = "Asia/Seoul";
 
 const CITY = "Seoul";
 
 /* ────────────────────────────────────────── */
-/* Data                                       */
+/* One big list — no separate constants,      */
+/* items appear in this exact order.          */
+/* Each has a unique category.                */
+/* Grouped by year (most recent first).       */
 /* ────────────────────────────────────────── */
 
-const PROJECTS = [
+const ITEMS = [
+
+  {
+    year: 2026,
+    title: "Basics of EE in Construction",
+    description: "A practical handbook for new EEs in the construction industry.",
+    href: "technicals/site-layouts.html",
+    category: "Personal"
+  },
 
   {
     year: 2025,
     title: "EE Capstone",
-    description:
-      "A custom-built autonomous drone for ICON Lab at Columbia.",
-    href:
-      "https://github.com/tprhkd/SmartStreetLight"
+    description: "Built an autonomous drone for ICON Lab at Columbia.",
+    href: "https://github.com/tprhkd/Electrical-Engineering-Capstone-Design-Project",
+    category: "Coursework"
   },
 
   {
     year: 2025,
     title: "Smart Street Light",
-    description:
-      "Led the net-zero smart street light project.",
-    href:
-      "https://github.com/tprhkd/SmartStreetLight"
+    description: "Led the net-zero smart street light project.",
+    href: "https://github.com/tprhkd/SmartStreetLight",
+    category: "Design Team"
   },
 
   {
     year: 2025,
     title: "Polaris",
-    description:
-      "Led firmware for a communication module for an autonomous sailboat.",
-    href:
-      "https://github.com/UBCSailbot/com-module-firmware/tree/main"
+    description: "Led firmware development for an autonomous sailboat.",
+    href: "https://github.com/UBCSailbot/com-module-firmware",
+    category: "Design Team"
+  },
+
+  {
+    year: 2025,
+    title: "EE Machine Learning I",
+    description: "Implemented Hidden Markov Models for stock price prediction.",
+    href: "https://github.com/tprhkd/Machine-Learning-with-Engineering-Applications",
+    category: "Coursework"
   },
 
   {
     year: 2024,
     title: "UBC Smart City",
-    description:
-      "Led an engineering design team. Increased the budget by 50%.",
-    href:
-      "assets/sc_annual_23.pdf"
+    description: "Led an engineering design team and increased project budget by 50%.",
+    href: "assets/sc_annual_23.pdf",
+    category: "Design Team"
   },
 
   {
     year: 2024,
     title: "EE Deep Learning I",
-    description:
-      "Implementation of Conditional PixelCNN++",
-    href:
-      "https://github.com/tprhkd/Deep-Learning/blob/main/CPEN355_Final.pdf"
+    description: "Implemented Conditional PixelCNN++ for image classification.",
+    href: "https://github.com/tprhkd/Deep-Learning/blob/main/CPEN355_Final.pdf",
+    category: "Coursework"
   },
 
   {
-    year: 2024,
+    year: 2023,
     title: "Energy Forecasting",
-    description:
-      "Led the study of energy usage intensity forecasting for MURC 2024.",
-    href:
-      "https://github.com/tprhkd/EUI_Model"
+    description: "Led energy forecasting research for undergraduate conference.",
+    href: "https://github.com/tprhkd/EUI_Model",
+    category: "Design Team"
   },
 
   {
     year: 2023,
     title: "Third-Space",
-    description:
-      "Led the smart home system design for the US Solar Decathlon 2023.",
-    href:
-      "https://www.thirdquadrantdesign.com/third-space"
+    description: "Led smart home system design for Solar Decathlon 2023.",
+    href: "https://www.thirdquadrantdesign.com/third-space",
+    category: "Design Team"
   },
 
   {
     year: 2023,
     title: "EE Design Studio II",
-    description:
-      "Developed a digital communication system on DE1-SoC.",
-    href:
-      "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-II"
+    description: "Developed a digital communication system with DE1-SoC.",
+    href: "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-II",
+    category: "Coursework"
   },
 
   {
     year: 2022,
     title: "EE Design Studio I",
-    description:
-      "Built capacitive circuits and coin collecting robot with Intel 8051.",
-    href:
-      "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-I"
+    description: "Built games and a coin collecting robot with Intel 8051.",
+    href: "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-I",
+    category: "Coursework"
   }
 
 ];
 
-const WRITING = [
-
-  {
-    year: 2026,
-    title: "Temporary power layouts",
-    description:
-      "Field references for temporary electrical installation planning.",
-    href:
-      "technicals/site-layouts.html"
-  },
-
-];
-
 /* ────────────────────────────────────────── */
-/* Merge + Sort                               */
-/* ────────────────────────────────────────── */
-
-const ITEMS = [
-
-  ...PROJECTS.map(item => ({
-    ...item,
-    category: "Project"
-  })),
-
-  ...WRITING.map(item => ({
-    ...item,
-    category: "Writing"
-  }))
-
-].sort((a, b) => b.year - a.year);
-
-/* ────────────────────────────────────────── */
-/* Render                                     */
+/* Render — group by year, years sorted       */
+/* descending (most recent first). Within     */
+/* each year, preserve original order.        */
 /* ────────────────────────────────────────── */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -262,65 +248,67 @@ function setIdentity() {
 
   document.getElementById("role").textContent = ROLE;
 
-  document.getElementById("bio").textContent = BIO;
-
 }
 
 function renderTimeline() {
 
-  const container =
-    document.getElementById("timeline");
+  const container = document.getElementById("timeline");
 
-  let currentYear = null;
+  container.innerHTML = "";
+
+  // Group items by year, preserving order within each year
+  const groups = new Map(); // year -> array of items
 
   ITEMS.forEach(item => {
-
-    if (item.year !== currentYear) {
-
-      currentYear = item.year;
-
-      const year =
-        document.createElement("div");
-
-      year.className = "timeline-year";
-
-      year.textContent = currentYear;
-
-      container.appendChild(year);
-
+    const year = item.year;
+    if (!groups.has(year)) {
+      groups.set(year, []);
     }
-
-    const entry =
-      document.createElement("a");
-
-    entry.className = "entry";
-
-    entry.href = item.href;
-
-    entry.innerHTML = `
-
-      <div class="entry-top">
-
-        <span class="entry-title">
-          ${item.title}
-        </span>
-
-        <span class="entry-category">
-          ${item.category}
-        </span>
-
-      </div>
-
-      <div class="entry-description">
-        ${item.description}
-      </div>
-
-    `;
-
-    container.appendChild(entry);
-
+    groups.get(year).push(item);
   });
 
+  // Get unique years and sort descending (newest first)
+  const sortedYears = Array.from(groups.keys()).sort((a, b) => b - a);
+
+  // For each year, create a column div, add year label, then each entry
+  sortedYears.forEach(year => {
+    const column = document.createElement("div");
+
+    const yearLabel = document.createElement("div");
+    yearLabel.className = "timeline-year";
+    yearLabel.textContent = year;
+    column.appendChild(yearLabel);
+
+    const itemsForYear = groups.get(year);
+    itemsForYear.forEach(item => {
+      const entry = document.createElement("a");
+      entry.className = "entry";
+      entry.href = item.href;
+
+      entry.innerHTML = `
+        <div class="entry-top">
+          <span class="entry-title">${escapeHtml(item.title)}</span>
+          <span class="entry-category">${escapeHtml(item.category)}</span>
+        </div>
+        <div class="entry-description">${escapeHtml(item.description)}</div>
+      `;
+
+      column.appendChild(entry);
+    });
+
+    container.appendChild(column);
+  });
+}
+
+// simple XSS protection
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>]/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    return m;
+  });
 }
 
 function updateTime() {
@@ -356,8 +344,6 @@ function updateTime() {
 <div id="name"></div>
 
 <div id="role" class="gray"></div>
-
-<div id="bio" class="bio gray"></div>
 
 <div id="timeline" class="timeline"></div>
 
