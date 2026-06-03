@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Notebook</title>
+<title>Notebook I</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 
 <!-- ============================================================
@@ -11,26 +11,42 @@
   ============================================================ -->
 <script>
 
-const TITLE       = "Notebook";
-const DESCRIPTION = "Notes on electrical engineering, systems, and research.";
 const BACK        = "../index.html";
 
-/* ── Notes ────────────────────────────────────────────────────
-   date     : display string  e.g. "May 2026"
-   title    : note title
-   description : one-line summary
-   tag      : category label  e.g. "Power", "ML", "Field"
-   href     : path to .html or .pdf
-   ────────────────────────────────────────────────────────── */
+const allSections = [
+  "Foundations",
+  "Circuit Analysis",
+];
+
 const NOTES = [
 
   {
-    date: "May 2026",
-    title: "Temporary power layouts",
-    description: "Field references for temporary electrical installation planning.",
-    tag: "Field",
-    href: "temporary-power.html"
+    section: "Foundations",
+    topic: "Introduction",
+    description: "Organization, notation, and study philosophy.",
+    href: "foundations/introduction"
   },
+
+  {
+    section: "Foundations",
+    topic: "Units and Conventions",
+    description: "SI units, prefixes, symbols, and notation.",
+    href: "foundations/units-and-conventions.html"
+  },
+
+  {
+    section: "Mathematics",
+    topic: "Complex Numbers",
+    description: "Polar form, Euler's identity, and phasor representation.",
+    href: "mathematics/complex-numbers.html"
+  },
+
+  {
+    section: "Circuit Analysis",
+    topic: "Nodal Analysis",
+    description: "Systematic circuit solving using node voltages.",
+    href: "circuit-analysis/nodal-analysis.html"
+  }
 
 ];
 
@@ -50,7 +66,7 @@ const NOTES = [
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  max-width: 760px;
+  max-width: 700px;
   margin: 70px auto;
   padding: 0 20px;
   font: 12px/1.7 Inter, sans-serif;
@@ -130,9 +146,6 @@ h1 { font-size: 12px; font-weight: 400; }
 
   <a class="back" id="j-back">← back</a>
 
-  <div id="j-title"></div>
-  <div class="desc gray" id="j-desc"></div>
-
   <div class="filters" id="j-filters"></div>
   <div class="notes"   id="j-notes"></div>
 
@@ -141,57 +154,85 @@ h1 { font-size: 12px; font-weight: 400; }
 <script>
 
   document.getElementById("j-back").href        = BACK;
-  document.getElementById("j-title").textContent = TITLE;
-  document.getElementById("j-desc").textContent  = DESCRIPTION;
 
   /* ── Tag filter ── */
-  const allTags = ["All", ...new Set(NOTES.map(n => n.tag))];
-  let activeTag = "All";
 
-  const filtersEl = document.getElementById("j-filters");
-  allTags.forEach(tag => {
-    const b = document.createElement("button");
-    b.className   = "filter-btn" + (tag === "All" ? " on" : "");
-    b.textContent = tag;
-    b.onclick = () => {
-      activeTag = tag;
-      document.querySelectorAll(".filter-btn").forEach(x => x.classList.remove("on"));
-      b.classList.add("on");
-      render();
-    };
-    filtersEl.appendChild(b);
-  });
+let activeSection = "Foundations";
+
+const filtersEl = document.getElementById("j-filters");
+
+allSections.forEach(section => {
+
+  const b = document.createElement("button");
+
+  b.className =
+    "filter-btn" +
+    (section === activeSection ? " on" : "");
+
+  b.textContent = section;
+
+  b.onclick = () => {
+
+    activeSection = section;
+
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach(x => x.classList.remove("on"));
+
+    b.classList.add("on");
+
+    render();
+  };
+
+  filtersEl.appendChild(b);
+});
 
   /* ── Render notes ── */
-  const notesEl = document.getElementById("j-notes");
+const notesEl = document.getElementById("j-notes");
 
-  function render() {
-    const filtered = activeTag === "All" ? NOTES : NOTES.filter(n => n.tag === activeTag);
-    notesEl.innerHTML = "";
+function render() {
 
-    if (!filtered.length) {
-      notesEl.innerHTML = '<div class="empty">No notes in this category yet.</div>';
-      return;
-    }
+  // Clear previous content every time
+  notesEl.innerHTML = "";
 
-    filtered.forEach(n => {
-      const a = document.createElement("a");
-      a.className = "note";
-      a.href      = n.href;
-      /* open PDFs in new tab, html notes in same tab */
-      if (n.href.endsWith(".pdf")) a.target = "_blank";
-      a.innerHTML = `
-        <div class="note-top">
-          <span class="note-title">${n.title}</span>
-          <span class="note-tag">${n.tag}</span>
-          <span class="note-date">${n.date}</span>
-        </div>
-        <div class="note-desc">${n.description}</div>`;
-      notesEl.appendChild(a);
-    });
+  const filtered = NOTES.filter(
+    n => n.section === activeSection
+  );
+
+  if (filtered.length === 0) {
+    notesEl.innerHTML =
+      '<div class="empty">No notes in this category yet.</div>';
+    return;
   }
 
-  render();
+  filtered.forEach(n => {
+
+    const a = document.createElement("a");
+
+    a.className = "note";
+    a.href = n.href;
+
+    if (n.href.endsWith(".pdf")) {
+      a.target = "_blank";
+    }
+
+    a.innerHTML = `
+      <div class="note-top">
+        <span class="note-title">${n.topic}</span>
+        <span class="note-tag">${n.section}</span>
+      </div>
+
+      <div class="note-desc">
+        ${n.description}
+      </div>
+    `;
+
+    notesEl.appendChild(a);
+
+  });
+}
+
+render();
 
   /* ── Clock (matches index.html) ── */
   const TIMEZONE = "Asia/Seoul";

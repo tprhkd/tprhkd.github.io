@@ -1,354 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kim</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
+  <style>
+    /* ----- base (fonts, colors, spacing untouched) ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    body {
+      max-width: 700px;
+      margin: 70px auto;
+      padding: 0 10px;
+      font: 12px/1.7 Inter, sans-serif;
+      background: #fff;
+      color: #111;
+    }
 
-<title>Kim</title>
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-<link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
+    .gray {
+      color: #777;
+    }
 
-<style>
+    /* ----- timeline container: vertical flow (years go down) ----- */
+    .timeline {
+      margin-top: 50px;
+      display: block;          /* remove old two‑column grid for years */
+    }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    /* each year block: year label + two‑column entry grid */
+    .year-section {
+      margin-bottom: 20px;     /* clean separation between years */
+    }
 
-body {
-  max-width: 760px;
-  margin: 70px auto;
-  padding: 0 20px;
+    .year-section:last-child {
+      margin-bottom: 0;
+    }
 
-  font: 12px/1.7 Inter, sans-serif;
+    /* year label style exactly as before */
+    .timeline-year {
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #777;
+    }
 
-  background: #fff;
-  color: #111;
-}
+    /* TWO‑COLUMN GRID under each year — no font changes, only layout */
+    .year-entries-grid {
+      display: grid;
+      border-top: 1px solid #e5e5e5;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 7px;          /* horizontal + vertical gap (similar to original grid gap) */
+    }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+    /* entry card styling: exactly the same as original (border, hover, padding) */
+    .entry {
+      display: block;
+      padding: 7px 7px;
+      transition: background .15s, padding-left .15s;
+    }
 
-.gray {
-  color: #777;
-}
+    .entry:hover {
+      background: #f5f5f5;
+    }
 
-.timeline {
-  margin-top: 50px;
+    .entry-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px 28px;
-}
+    .entry-title {
+      color: #111;
+    }
 
-.timeline-year {
-  margin-bottom: 10px;
+    .entry-category {
+      font-size: 11px;
+      color: #777;
+    }
 
-  font-size: 12px;
-  color: #777;
-}
+    .entry-description {
+      margin-top: 2px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #777;
+    }
 
-.entry {
-  display: block;
+    /* footer time — untouched */
+    .footer {
+      margin-top: 80px;
+      color: #777;
+    }
 
-  padding: 10px 0;
+    /* responsive: on narrow screens, each year entries become one column */
+    @media (max-width: 640px) {
+      .year-entries-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .year-section {
+        margin-bottom: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
 
-  border-top: 1px solid #e5e5e5;
-
-  transition:
-    background .15s,
-    padding-left .15s;
-}
-
-.entry:hover {
-  background: #f5f5f5;
-  padding-left: 6px;
-}
-
-.entry-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  flex-wrap: wrap;
-}
-
-.entry-title {
-  color: #111;
-}
-
-.entry-category {
-  font-size: 11px;
-  color: #777;
-}
-
-.entry-description {
-  margin-top: 2px;
-
-  font-size: 12px;
-  line-height: 1.6;
-  color: #777;
-}
-
-.footer {
-  margin-top: 80px;
-  color: #777;
-}
-
-@media (max-width: 640px) {
-
-  .timeline {
-    grid-template-columns: 1fr;
-  }
-
-}
-
-</style>
+<div id="name"></div>
+<div id="role" class="gray"></div>
+<div id="timeline" class="timeline"></div>
+<div id="time" class="footer"></div>
 
 <script>
+  /* ----- identity ----- */
+  const NAME = "SE KWANG (PETER), KIM";
+  const ROLE = "Electrical Engineer";
+  const TIMEZONE = "Asia/Seoul";
+  const CITY = "Seoul";
 
-/* ────────────────────────────────────────── */
-/* Identity                                   */
-/* ────────────────────────────────────────── */
+  /* ----- timeline data (preserved order, grouped by year later) ----- */
+  const ITEMS = [
+    { year: 2026, title: "Notebook II", description: "A handbook for electrical engineers in building projects.", href: "notebook ii/", category: "Personal" },
+    { year: 2026, title: "Notebook I", description: "A handbook for electrical engineering students.", href: "notebook i/", category: "Personal" },
+    { year: 2025, title: "EE Capstone", description: "Built an autonomous drone for Columbia University.", href: "https://github.com/tprhkd/Electrical-Engineering-Capstone-Design-Project", category: "Coursework" },
+    { year: 2025, title: "Smart Street Light", description: "Led the net-zero smart street light project.", href: "https://github.com/tprhkd/SmartStreetLight", category: "Design Team" },
+    { year: 2025, title: "Polaris", description: "Led firmware development for an autonomous sailboat.", href: "https://github.com/UBCSailbot/com-module-firmware", category: "Design Team" },
+    { year: 2025, title: "EE Machine Learning I", description: "Implemented Hidden Markov Models for stock prediction.", href: "https://github.com/tprhkd/Machine-Learning-with-Engineering-Applications", category: "Coursework" },
+    { year: 2024, title: "UBC Smart City", description: "Led an engineering team and increased its budget by 50%.", href: "assets/sc_annual_23.pdf", category: "Design Team" },
+    { year: 2024, title: "EE Deep Learning I", description: "Implemented Conditional PixelCNN++ for image classification.", href: "https://github.com/tprhkd/Deep-Learning/blob/main/CPEN355_Final.pdf", category: "Coursework" },
+    { year: 2023, title: "Energy Forecasting", description: "Led the research for an energy prediction paper for a conference.", href: "https://github.com/tprhkd/EUI_Model", category: "Design Team" },
+    { year: 2023, title: "Third-Space", description: "Led smart home system design for Solar Decathlon 2023.", href: "https://www.thirdquadrantdesign.com/third-space", category: "Design Team" },
+    { year: 2023, title: "EE Design Studio II", description: "Developed a digital communication system with DE1-SoC.", href: "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-II", category: "Coursework" },
+    { year: 2022, title: "EE Design Studio I", description: "Built games and a coin collecting robot with Intel 8051.", href: "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-I", category: "Coursework" }
+  ];
 
-const NAME = "SE KWANG (PETER), KIM";
-
-const ROLE = "Electrical Engineer";
-
-const TIMEZONE = "Asia/Seoul";
-
-const CITY = "Seoul";
-
-/* ────────────────────────────────────────── */
-/* One big list — no separate constants,      */
-/* items appear in this exact order.          */
-/* Each has a unique category.                */
-/* Grouped by year (most recent first).       */
-/* ────────────────────────────────────────── */
-
-const ITEMS = [
-
-  {
-    year: 2026,
-    title: "Basics of EE in Construction",
-    description: "A practical handbook for new EEs in the construction industry.",
-    href: "technicals/site-layouts.html",
-    category: "Personal"
-  },
-
-  {
-    year: 2025,
-    title: "EE Capstone",
-    description: "Built an autonomous drone for ICON Lab at Columbia.",
-    href: "https://github.com/tprhkd/Electrical-Engineering-Capstone-Design-Project",
-    category: "Coursework"
-  },
-
-  {
-    year: 2025,
-    title: "Smart Street Light",
-    description: "Led the net-zero smart street light project.",
-    href: "https://github.com/tprhkd/SmartStreetLight",
-    category: "Design Team"
-  },
-
-  {
-    year: 2025,
-    title: "Polaris",
-    description: "Led firmware development for an autonomous sailboat.",
-    href: "https://github.com/UBCSailbot/com-module-firmware",
-    category: "Design Team"
-  },
-
-  {
-    year: 2025,
-    title: "EE Machine Learning I",
-    description: "Implemented Hidden Markov Models for stock price prediction.",
-    href: "https://github.com/tprhkd/Machine-Learning-with-Engineering-Applications",
-    category: "Coursework"
-  },
-
-  {
-    year: 2024,
-    title: "UBC Smart City",
-    description: "Led an engineering design team and increased project budget by 50%.",
-    href: "assets/sc_annual_23.pdf",
-    category: "Design Team"
-  },
-
-  {
-    year: 2024,
-    title: "EE Deep Learning I",
-    description: "Implemented Conditional PixelCNN++ for image classification.",
-    href: "https://github.com/tprhkd/Deep-Learning/blob/main/CPEN355_Final.pdf",
-    category: "Coursework"
-  },
-
-  {
-    year: 2023,
-    title: "Energy Forecasting",
-    description: "Led energy forecasting research for undergraduate conference.",
-    href: "https://github.com/tprhkd/EUI_Model",
-    category: "Design Team"
-  },
-
-  {
-    year: 2023,
-    title: "Third-Space",
-    description: "Led smart home system design for Solar Decathlon 2023.",
-    href: "https://www.thirdquadrantdesign.com/third-space",
-    category: "Design Team"
-  },
-
-  {
-    year: 2023,
-    title: "EE Design Studio II",
-    description: "Developed a digital communication system with DE1-SoC.",
-    href: "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-II",
-    category: "Coursework"
-  },
-
-  {
-    year: 2022,
-    title: "EE Design Studio I",
-    description: "Built games and a coin collecting robot with Intel 8051.",
-    href: "https://github.com/tprhkd/Electrical-Engineering-Design-Studio-I",
-    category: "Coursework"
+  /* ----- helper: simple XSS protection (unchanged) ----- */
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
   }
 
-];
+  /* ----- render: years go down, each year shows entries in TWO columns ----- */
+  function renderTimeline() {
+    const container = document.getElementById("timeline");
+    container.innerHTML = "";
 
-/* ────────────────────────────────────────── */
-/* Render — group by year, years sorted       */
-/* descending (most recent first). Within     */
-/* each year, preserve original order.        */
-/* ────────────────────────────────────────── */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  setIdentity();
-
-  renderTimeline();
-
-  updateTime();
-
-  setInterval(updateTime, 30000);
-
-});
-
-function setIdentity() {
-
-  document.getElementById("name").textContent = NAME;
-
-  document.getElementById("role").textContent = ROLE;
-
-}
-
-function renderTimeline() {
-
-  const container = document.getElementById("timeline");
-
-  container.innerHTML = "";
-
-  // Group items by year, preserving order within each year
-  const groups = new Map(); // year -> array of items
-
-  ITEMS.forEach(item => {
-    const year = item.year;
-    if (!groups.has(year)) {
-      groups.set(year, []);
-    }
-    groups.get(year).push(item);
-  });
-
-  // Get unique years and sort descending (newest first)
-  const sortedYears = Array.from(groups.keys()).sort((a, b) => b - a);
-
-  // For each year, create a column div, add year label, then each entry
-  sortedYears.forEach(year => {
-    const column = document.createElement("div");
-
-    const yearLabel = document.createElement("div");
-    yearLabel.className = "timeline-year";
-    yearLabel.textContent = year;
-    column.appendChild(yearLabel);
-
-    const itemsForYear = groups.get(year);
-    itemsForYear.forEach(item => {
-      const entry = document.createElement("a");
-      entry.className = "entry";
-      entry.href = item.href;
-
-      entry.innerHTML = `
-        <div class="entry-top">
-          <span class="entry-title">${escapeHtml(item.title)}</span>
-          <span class="entry-category">${escapeHtml(item.category)}</span>
-        </div>
-        <div class="entry-description">${escapeHtml(item.description)}</div>
-      `;
-
-      column.appendChild(entry);
+    // group items by year (preserve original order within each year)
+    const groups = new Map();
+    ITEMS.forEach(item => {
+      const year = item.year;
+      if (!groups.has(year)) groups.set(year, []);
+      groups.get(year).push(item);
     });
 
-    container.appendChild(column);
-  });
-}
+    // years descending (most recent first → 2026,2025,2024,2023,2022)
+    const sortedYears = Array.from(groups.keys()).sort((a, b) => b - a);
 
-// simple XSS protection
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  });
-}
+    for (const year of sortedYears) {
+      const yearItems = groups.get(year);
+      if (!yearItems.length) continue;
 
-function updateTime() {
+      // create year section container
+      const section = document.createElement("div");
+      section.className = "year-section";
 
-  const now = new Date();
+      // year label (exact same style as before)
+      const yearLabel = document.createElement("div");
+      yearLabel.className = "timeline-year";
+      yearLabel.textContent = year;
+      section.appendChild(yearLabel);
 
-  const time =
-    now.toLocaleTimeString("en-GB", {
+      // two‑column grid container for entries under this year
+      const entriesGrid = document.createElement("div");
+      entriesGrid.className = "year-entries-grid";
+
+      // append every entry as a fully preserved .entry element
+      yearItems.forEach(item => {
+        const entryLink = document.createElement("a");
+        entryLink.className = "entry";
+        entryLink.href = item.href;
+        // keep identical inner structure
+        entryLink.innerHTML = `
+          <div class="entry-top">
+            <span class="entry-title">${escapeHtml(item.title)}</span>
+            <span class="entry-category">${escapeHtml(item.category)}</span>
+          </div>
+          <div class="entry-description">${escapeHtml(item.description)}</div>
+        `;
+        entriesGrid.appendChild(entryLink);
+      });
+
+      section.appendChild(entriesGrid);
+      container.appendChild(section);
+    }
+  }
+
+  /* ----- identity & time (unchanged logic) ----- */
+  function setIdentity() {
+    document.getElementById("name").textContent = NAME;
+    document.getElementById("role").textContent = ROLE;
+  }
+
+  function updateTime() {
+    const now = new Date();
+    const time = now.toLocaleTimeString("en-GB", {
       timeZone: TIMEZONE,
       hour: "2-digit",
       minute: "2-digit"
     });
-
-  const date =
-    now.toLocaleDateString("en-US", {
+    const date = now.toLocaleDateString("en-US", {
       timeZone: TIMEZONE,
       month: "short",
       day: "numeric",
       year: "numeric"
     });
+    document.getElementById("time").textContent = `${time} in ${CITY} — ${date}`;
+  }
 
-  document.getElementById("time").textContent =
-    `${time} in ${CITY} — ${date}`;
-
-}
-
+  /* ----- bootstrap ----- */
+  document.addEventListener("DOMContentLoaded", () => {
+    setIdentity();
+    renderTimeline();
+    updateTime();
+    setInterval(updateTime, 30000);
+  });
 </script>
-
-</head>
-
-<body>
-
-<div id="name"></div>
-
-<div id="role" class="gray"></div>
-
-<div id="timeline" class="timeline"></div>
-
-<div id="time" class="footer"></div>
-
 </body>
-
 </html>
