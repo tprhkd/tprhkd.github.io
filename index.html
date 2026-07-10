@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kim</title>
+<title>Peter Kim</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 
@@ -41,8 +41,7 @@ const CITIES=[
 ];
 
 const ITEMS=[
-["Electrical Design I",2026,"A handbook for electrical engineers in training.","notebook ii/"],
-["Electrical Theory I",2026,"A handbook for electrical engineering undergraduate students.","notebook i/"],
+["Electrical Design I",2026,"A handbook for building electrical design.","ED-I/"],
 ["EE Capstone",2025,"Built an autonomous drone for Columbia University.","https://github.com/tprhkd/Electrical-Engineering-Capstone-Design-Project"],
 ["Smart Street Light",2025,"Led the net-zero smart street light design project.","https://github.com/tprhkd/SmartStreetLight"],
 ["Polaris",2025,"Led firmware development for an autonomous sailboat.","https://github.com/UBCSailbot/com-module-firmware"],
@@ -58,7 +57,7 @@ const ITEMS=[
 timeline.innerHTML=ITEMS.map(([t,y,d,h])=>`
 <div class="entry">
 <a class="entry-title" href="${h}">${t} [${y}]</a>
-<span class="entry-description"> — ${d}</span>
+<span class="entry-description"> - ${d}</span>
 </div>`).join("");
 
 

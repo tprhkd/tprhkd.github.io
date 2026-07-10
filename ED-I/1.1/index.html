@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Note</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<!-- MathJax — renders $inline$ and $$block$$ equations -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath:  [["$","$"],["\\(","\\)"]],
+    displayMath: [["$$","$$"],["\\[","\\]"]],
+    processEscapes: true
+  },
+  options: { skipHtmlTags: ["script","noscript","style","textarea","pre"] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<!-- ============================================================
+  EDITABLE
+  ============================================================ -->
+<script>
+
+const BACK      = "../index.html";   /* path back to notebook index   */
+const MD_PATH   = "1.1.md";         /* .md file in the same folder   */
+const AUTHOR    = "SK";
+const AUTHOR_URL= "https://x.com/sk01225";
+const DATE      = "JUN 2026";        /* displayed in byline           */
+const PDF_NAME  = "note.pdf";        /* filename when downloading PDF */
+
+</script>
+<!-- ============================================================
+  END EDITABLE
+  ============================================================ -->
+
+<!-- =============================================================
+  EXACT NOTEBOOK CSS (unchanged)
+  ============================================================= -->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    max-width: 700px;
+    margin: 70px auto;
+    padding: 0 20px;
+    font: 12px/1.7 Inter, sans-serif;
+    background: #fff;
+    color: #111;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  .gray { color: #777; }
+
+  .back { display: inline-block; margin-bottom: 40px; color: #777; }
+  .back:hover { color: #111; }
+
+  .playbook-title {
+    font-size: 12px;
+    letter-spacing: -0.2px;
+    margin-bottom: 6px;
+  }
+  .playbook-sub {
+    color: #777;
+    margin-bottom: 48px;
+    font-size: 12px;
+  }
+
+  .chapter-head {
+    margin: 32px 0 10px 0;
+    font-size: 12px;
+    color: #111;
+    padding-bottom: 4px;
+  }
+  .chapter-head:first-of-type {
+    margin-top: 0;
+  }
+
+  .notes {
+    margin-top: 0;
+  }
+
+  .note {
+    display: block;
+    padding: 10px 0;
+    border-top: 1px solid #e5e5e5;
+    transition: background .15s, padding-left .15s;
+  }
+  .note:hover {
+    background: #f5f5f5;
+  }
+  .notes .note:last-child {
+    border-bottom: none;
+  }
+  .chapter-notes .note:last-child {
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .note-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .note-numbering {
+    font-size: 11px;
+    font-feature-settings: "tnum";
+    letter-spacing: 0;
+    padding: 2px 6px;
+    line-height: 1.4;
+  }
+  .note-title {
+    color: #111;
+  }
+  .note-desc {
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #777;
+  }
+
+  .footer {
+    margin-top: 80px;
+    color: #777;
+  }
+
+  @media (max-width: 640px) {
+    .note-numbering {
+      font-size: 10px;
+      padding: 2px 5px;
+    }
+  }
+</style>
+
+<!-- =============================================================
+  NOTE‑SPECIFIC STYLES (markdown, byline, PDF, etc.)
+  ============================================================= -->
+<style>
+  /* ── Byline (from original note) ── */
+  .byline {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 5px;
+    font-size: 11px;
+    color: #656565;
+  }
+  .author-name:hover { color: #111; text-decoration-color: #111; }
+  .pdf-link {
+    margin-left: auto;
+    font-size: 11px;
+    color: #656565;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: #bbb;
+  }
+  .pdf-link:hover { color: #111; text-decoration-color: #111; }
+  .pdf-link.is-busy { pointer-events: none; color: #bbb; text-decoration-color: #ddd; }
+
+  /* ── Markdown body ── */
+  .markdown-body { font-size: 13px; line-height: 1.7; color: #1a1a1a; }
+  .markdown-body h1 {
+    margin: 0 0 20px;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.2px;
+    color: #111;
+  }
+  .markdown-body h2 {
+    margin: 28px 0 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #111;
+  }
+  .markdown-body h3 {
+    margin: 20px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+  }
+  .markdown-body p    { margin: 0 0 18px; }
+  .markdown-body a    { color: #111; text-decoration: underline; text-underline-offset: 3px;
+    text-decoration-thickness: 1px; text-decoration-color: #bbb; }
+  .markdown-body a:hover { text-decoration-color: #111; }
+  .markdown-body ul,
+  .markdown-body ol   { margin: 0 0 18px 24px; }
+  .markdown-body li   { margin-bottom: 6px; }
+  .markdown-body blockquote {
+    margin: 0 0 18px;
+    padding-left: 18px;
+    border-left: 3px solid #e2e2e2;
+    color: #5a5a5a;
+  }
+  .markdown-body code {
+    padding: 2px 5px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+  }
+  .markdown-body pre  {
+    margin-bottom: 18px;
+    padding: 16px;
+    overflow-x: auto;
+    background: #f5f5f5;
+    border-radius: 6px;
+  }
+  .markdown-body pre code { background: none; padding: 0; }
+  .markdown-body table {
+    width: 95%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 11px;
+  }
+  .markdown-body th,
+  .markdown-body td   { padding: 8px 12px; border: 1px solid #e2e2e2; text-align: left; }
+  .markdown-body th   { font-weight: 600; }
+  .markdown-body strong { font-weight: 600; }
+  .markdown-body hr   { border: none; border-top: 1px solid #e2e2e2; margin: 24px 0; }
+
+  /* MathJax display block spacing */
+  .markdown-body mjx-container[display="true"] { margin: 18px 0; overflow-x: auto; }
+
+  /* page-break safety */
+  .markdown-body p, .markdown-body li, .markdown-body h1, .markdown-body h2,
+  .markdown-body blockquote, .markdown-body pre, .markdown-body tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* ── States ── */
+  .loading { padding: 32px 0; color: #86868b; text-align: center; }
+  .error   { padding: 32px 0; color: #dc3545; text-align: center; }
+
+  /* ── Footer ── */
+  footer {
+    font-size: 9px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    color: #86868b;
+  }
+
+  /* ── Print ── */
+  @page { margin: 0; }
+  @media print {
+    .pdf-link, .back { display: none; }
+    body { margin: 0; padding: 25mm 15mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Back link – uses the exact .back from notebook CSS -->
+<a class="back" id="j-back">← back</a>
+
+<div class="byline">
+  <a id="j-author" class="author-name" target="_blank" rel="noopener noreferrer"></a>
+  <span>•</span>
+  <span id="j-date"></span>
+  <a href="#" id="pdf-link" class="pdf-link">Download PDF</a>
+</div>
+
+<div id="rendered-content" class="markdown-body">
+  <div class="loading">Loading…</div>
+</div>
+
+<footer></footer>
+
+<script>
+  /* ── Identity ── */
+  document.getElementById("j-back").href         = BACK;
+  document.getElementById("j-author").textContent= AUTHOR;
+  document.getElementById("j-author").href        = AUTHOR_URL;
+  document.getElementById("j-date").textContent  = DATE;
+
+  /* ── Load & render markdown ── */
+  (async () => {
+    const output = document.getElementById("rendered-content");
+    try {
+      let base = window.location.href.split(/[?#]/)[0];
+      if (!base.endsWith("/")) base += "/";
+      const url = new URL(MD_PATH, base).toString();
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status} — could not load "${MD_PATH}".`);
+      const md = await res.text();
+      if (!md.trim()) { output.innerHTML = "<p style='color:#bbb;padding:32px 0'>File is empty.</p>"; return; }
+
+      marked.setOptions({ breaks: true, gfm: true, headerIds: false, mangle: false });
+      output.innerHTML = marked.parse(md);
+
+      /* re-run MathJax after markdown is injected */
+      if (window.MathJax) MathJax.typesetPromise([output]);
+
+    } catch (err) {
+      console.error(err);
+      output.innerHTML = `<div class="error"><p><strong>Error loading content</strong></p>
+        <p style="margin-top:8px;font-size:12px;color:#86868b;white-space:pre-wrap">${err.message}</p></div>`;
+    }
+  })();
+
+  /* ── PDF ── */
+  document.getElementById("pdf-link").addEventListener("click", e => {
+    e.preventDefault();
+    const link = e.currentTarget;
+    link.classList.add("is-busy"); link.textContent = "Preparing…";
+    const win = window.open("", "_blank");
+    html2pdf()
+      .set({
+        margin: [15,20,15,20],
+        filename: PDF_NAME,
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: { scale: 2, useCORS: true,
+          ignoreElements: el => el.id === "pdf-link" || el.classList.contains("back") },
+        jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all","css","legacy"] }
+      })
+      .from(document.body)
+      .outputPdf("blob")
+      .then(blob => { if(win) win.location.href = URL.createObjectURL(blob); })
+      .catch(err => { console.error(err); if(win) win.close(); })
+      .finally(() => { link.classList.remove("is-busy"); link.textContent = "Download PDF"; });
+  });
+</script>
+</body>
+</html>
