@@ -1,0 +1,24 @@
+body {
+  max-width:600px;
+  padding: 0 20px;
+  margin: 60px auto;
+  background:#fff;
+  font-family: Inter, sans-serif;
+}
+
+a {
+    font-size: 13px;
+}
+
+.light {
+    color:#5e5e5e;
+}
+
+.href {
+    color:#000000;
+    text-decoration: underline;
+}
+
+.href:hover {
+    text-decoration: none;
+}
