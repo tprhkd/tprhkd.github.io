@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- EDIT: page title -->
+<title>1.1 · Chapter title — ED-I</title>
+
+<!-- markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!-- math -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<!-- code blocks -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<!-- pdf export -->
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+
+<style>
+  :root{
+    --bg:#fafaf9;
+    --bg-raised:#f0f0ee;
+    --bg-code:#f5f5f4;
+    --text:#161616;
+    --text-dim:#6e6e6e;
+    --text-faint:#a8a8a4;
+    --border:rgba(0,0,0,0.09);
+    --accent:#2f6fed;
+    --mono:'SF Mono','JetBrains Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--text);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.6;font-size:14px;
+    padding-bottom:110px;
+  }
+  a{color:var(--accent);text-underline-offset:3px;}
+  .wrap{max-width:600px;margin:0 auto;padding:64px 20px 32px;}
+
+  /* reading progress */
+  #progress{
+    position:fixed;top:0;left:0;height:2px;width:0%;
+    background:var(--accent);z-index:50;transition:width .1s linear;
+  }
+
+  .crumbs{
+    font-family:var(--mono);font-size:11px;color:var(--text-faint);
+    display:flex;align-items:center;gap:6px;margin-bottom:24px;
+  }
+  .crumbs a{color:var(--text-dim);text-decoration:none;}
+  .crumbs a:hover{color:var(--accent);}
+
+  header.chapter-head{
+    display:flex;align-items:center;gap:10px;
+    padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:8px;
+  }
+  header.chapter-head .chip{
+    font-family:var(--mono);font-size:11px;color:var(--text-dim);
+    border:1px solid var(--border);border-radius:5px;padding:2px 7px;flex-shrink:0;
+  }
+  header.chapter-head h1{font-size:13px;font-weight:500;color:var(--text-dim);margin:0;}
+
+  /* on-page contents, only injected if there are 2+ headings */
+  #on-this-page{
+    margin:0 0 32px;padding:12px 14px;
+    border:1px solid var(--border);border-radius:8px;
+    background:var(--bg-raised);
+    font-size:12px;
+  }
+  #on-this-page .otp-label{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.04em;
+    text-transform:uppercase;color:var(--text-faint);margin-bottom:6px;
+  }
+  #on-this-page ul{list-style:none;margin:0;padding:0;}
+  #on-this-page li{margin:3px 0;}
+  #on-this-page a{color:var(--text-dim);text-decoration:none;}
+  #on-this-page a:hover{color:var(--accent);}
+  #on-this-page li.lvl3{padding-left:14px;}
+
+  /* ---------- rendered markdown ---------- */
+  #rendered-content{font-size:14px;}
+  #rendered-content h1,#rendered-content h2,#rendered-content h3{
+    font-weight:600;letter-spacing:-0.01em;margin:1.6em 0 0.6em;scroll-margin-top:24px;
+  }
+  #rendered-content h1{font-size:20px;}
+  #rendered-content h2{font-size:16px;padding-top:0.5em;border-top:1px solid var(--border);}
+  #rendered-content h3{font-size:14px;color:#2a2a2a;}
+  #rendered-content h1:first-child,#rendered-content h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+  #rendered-content .heading-anchor{
+    opacity:0;margin-left:6px;font-weight:400;color:var(--text-faint);
+    text-decoration:none;font-size:0.8em;transition:opacity .1s ease;
+  }
+  #rendered-content h1:hover .heading-anchor,
+  #rendered-content h2:hover .heading-anchor,
+  #rendered-content h3:hover .heading-anchor{opacity:1;}
+
+  #rendered-content p{margin:0 0 1em;color:#2c2c2c;}
+  #rendered-content strong{color:var(--text);}
+  #rendered-content ul,#rendered-content ol{margin:0 0 1em;padding-left:1.3em;color:#2c2c2c;}
+  #rendered-content li{margin:0.3em 0;}
+  #rendered-content img{
+    max-width:100%;border-radius:8px;border:1px solid var(--border);margin:1.2em 0;display:block;
+  }
+  #rendered-content blockquote{
+    margin:1.2em 0;padding:2px 16px;border-left:2px solid var(--accent);color:var(--text-dim);
+  }
+  #rendered-content code{
+    font-family:var(--mono);font-size:0.85em;background:var(--bg-code);
+    border:1px solid var(--border);border-radius:4px;padding:0.15em 0.4em;
+  }
+  #rendered-content pre{
+    position:relative;background:var(--bg-code);border:1px solid var(--border);
+    border-radius:8px;padding:14px;overflow-x:auto;margin:1.2em 0;
+  }
+  #rendered-content pre code{background:none;border:none;padding:0;font-size:0.82em;line-height:1.55;}
+  .copy-btn{
+    position:absolute;top:8px;right:8px;
+    font-family:var(--mono);font-size:10px;color:var(--text-faint);
+    background:var(--bg);border:1px solid var(--border);border-radius:5px;
+    padding:3px 7px;cursor:pointer;opacity:0;transition:opacity .12s ease,color .12s ease;
+  }
+  #rendered-content pre:hover .copy-btn{opacity:1;}
+  .copy-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .copy-btn.copied{color:var(--accent);border-color:var(--accent);}
+
+  #rendered-content table{width:100%;border-collapse:collapse;margin:1.2em 0;font-size:0.88em;}
+  #rendered-content th,#rendered-content td{border:1px solid var(--border);padding:7px 10px;text-align:left;}
+  #rendered-content th{color:var(--text-dim);font-weight:600;background:var(--bg-raised);}
+  #rendered-content hr{border:none;border-top:1px solid var(--border);margin:2em 0;}
+  #rendered-content .katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0;}
+  #rendered-content .katex{font-size:1em;}
+
+  .error{
+    border:1px solid rgba(220,50,50,0.25);background:rgba(220,50,50,0.05);
+    border-radius:8px;padding:14px 16px;color:#b23434;font-size:13px;
+  }
+
+  /* ---------- dock ---------- */
+  .dock{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    display:flex;gap:8px;padding:7px;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    border:1px solid var(--border);border-radius:999px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.06);
+  }
+  .dock a,.dock button{
+    width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+    border-radius:50%;background:var(--bg-raised);color:var(--text-dim);
+    border:none;cursor:pointer;font-family:inherit;
+    transition:color .15s ease,background .15s ease;
+  }
+  .dock a:hover,.dock button:hover{color:var(--text);background:#e8e8e6;}
+  .dock svg{width:14px;height:14px;}
+  .dock button.is-busy{opacity:0.5;cursor:wait;}
+
+  @media (max-width:600px){.wrap{padding-top:48px;}}
+  @media print{.dock,#progress,#on-this-page{display:none;}}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="wrap">
+
+  <div class="crumbs">
+    <!-- EDIT: crumb links — adjust depth (../../ etc.) to match folder nesting -->
+    <a href="../../">ED-I</a>
+    <span>/</span>
+    <a href="../">Subject One</a>
+    <span>/</span>
+    <span>1.1</span>
+  </div>
+
+  <header class="chapter-head">
+    <!-- EDIT: chapter number + short breadcrumb title -->
+    <span class="chip">1.1</span>
+    <h1>Subject One</h1>
+  </header>
+
+  <div id="on-this-page" style="display:none;">
+    <p class="otp-label">on this page</p>
+    <ul id="otp-list"></ul>
+  </div>
+
+  <div id="rendered-content">
+    <p style="color:var(--text-faint);">Loading…</p>
+  </div>
+
+</div>
+
+<div class="dock">
+  <a href="../../" title="Home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+  </a>
+  <a href="../" title="Back to chapters">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+  </a>
+  <button id="pdf-link" onclick="generatePDF(event)" title="Save as PDF">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V2h9l5 5v2"/><path d="M6 22h11a2 2 0 0 0 2-2v-8H6z"/><path d="M14 2v5h5"/></svg>
+  </button>
+</div>
+
+<script>
+(async () => {
+    const output = document.getElementById("rendered-content");
+
+    // EDIT EDIT EDIT EDIT
+    // Update this to your .md file's name. Must match the deployed
+    // filename EXACTLY, including case (case-sensitive on GitHub Pages/Linux hosts).
+    const MD_PATH = '1.1.md';
+
+    try {
+        // Resolve relative to *this* html file's own FOLDER.
+        // IMPORTANT: if the page URL has no trailing slash (e.g.
+        // https://site.com/report/24Q3 instead of .../report/24Q3/),
+        // the browser treats the last path segment as a filename and
+        // drops it before resolving a relative path — so "24Q3.md"
+        // would incorrectly resolve to https://site.com/report/24Q3.md
+        // instead of https://site.com/report/24Q3/24Q3.md. Forcing a
+        // trailing slash on the base first fixes this regardless of how
+        // the host (Vercel, GitHub Pages, clean-URL routers, etc.)
+        // serves the page.
+        let base = window.location.href.split(/[?#]/)[0]; // strip query/hash
+        if (!base.endsWith('/')) base += '/';
+        const resolvedUrl = new URL(MD_PATH, base).toString();
+
+        // cache: 'no-store' avoids a stale cached 404 sticking around
+        // right after a fresh deploy (CDN caching).
+        const response = await fetch(resolvedUrl, { cache: 'no-store' });
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status} fetching "${resolvedUrl}".\n` +
+                `Common causes: (1) the page URL is missing a trailing slash, ` +
+                `which breaks relative-path resolution for the .md file — make sure ` +
+                `links to this page end in "/", or configure your host to add one; ` +
+                `(2) on GitHub Pages specifically, Jekyll can intercept .md files — ` +
+                `add an empty ".nojekyll" file at your repo root; ` +
+                `(3) filename case mismatch between the fetch call and the deployed file.`
+            );
+        }
+
+        const markdown = await response.text();
+
+        if (!markdown.trim()) {
+            output.innerHTML = `
+                <p style="padding:32px 0;color:var(--text-faint);">
+                    The markdown file is empty.
+                </p>
+            `;
+            return;
+        }
+
+        // Configure Marked for better table + modern feature support
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false,
+            sanitize: false
+        });
+
+        output.innerHTML = marked.parse(markdown);
+
+        // Render math ($...$ and $$...$$) with KaTeX
+        if (window.renderMathInElement) {
+            renderMathInElement(output, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '$', right: '$', display: false },
+                    { left: '\\[', right: '\\]', display: true },
+                    { left: '\\(', right: '\\)', display: false }
+                ],
+                throwOnError: false
+            });
+        }
+
+        // Syntax-highlight code blocks + add copy buttons
+        output.querySelectorAll('pre code').forEach((block) => {
+            if (window.hljs) hljs.highlightElement(block);
+            const pre = block.parentElement;
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.type = 'button';
+            btn.textContent = 'copy';
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(block.textContent).then(() => {
+                    btn.textContent = 'copied';
+                    btn.classList.add('copied');
+                    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1200);
+                });
+            });
+            pre.appendChild(btn);
+        });
+
+        // Slugify + link headings, build "on this page" outline
+        const slugCounts = {};
+        const headings = Array.from(output.querySelectorAll('h2, h3'));
+        if (headings.length >= 2) {
+            const otpList = document.getElementById('otp-list');
+            headings.forEach((h) => {
+                let slug = h.textContent.trim().toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-');
+                if (slugCounts[slug] != null) {
+                    slugCounts[slug]++;
+                    slug = `${slug}-${slugCounts[slug]}`;
+                } else {
+                    slugCounts[slug] = 0;
+                }
+                h.id = slug;
+
+                const anchor = document.createElement('a');
+                anchor.href = `#${slug}`;
+                anchor.className = 'heading-anchor';
+                anchor.textContent = '#';
+                h.appendChild(anchor);
+
+                const li = document.createElement('li');
+                if (h.tagName === 'H3') li.className = 'lvl3';
+                const link = document.createElement('a');
+                link.href = `#${slug}`;
+                link.textContent = h.textContent.replace('#', '').trim();
+                li.appendChild(link);
+                otpList.appendChild(li);
+            });
+            document.getElementById('on-this-page').style.display = 'block';
+        }
+
+        // Set document title from first heading, if present
+        const firstHeading = output.querySelector('h1, h2');
+        if (firstHeading) document.title = firstHeading.textContent.replace('#', '').trim() + ' — ED-I';
+
+    } catch (error) {
+        console.error('Error loading markdown:', error);
+        output.innerHTML = `
+            <div class="error">
+                <p><strong>Error loading content</strong></p>
+                <p style="margin-top:8px;font-size:12px;color:#b23434;white-space:pre-wrap;">
+                    ${error.message}
+                </p>
+            </div>
+        `;
+    }
+})();
+
+// Reading progress bar
+(() => {
+    const bar = document.getElementById('progress');
+    const update = () => {
+        const h = document.documentElement;
+        const scrolled = h.scrollTop;
+        const height = h.scrollHeight - h.clientHeight;
+        bar.style.width = height > 0 ? `${(scrolled / height) * 100}%` : '0%';
+    };
+    document.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+})();
+
+function generatePDF(e) {
+    e.preventDefault();
+
+    const link = document.getElementById("pdf-link");
+    link.classList.add("is-busy");
+
+    // Open the tab synchronously (on the click) so popup blockers allow it
+    const newWindow = window.open("", "_blank");
+
+    const element = document.querySelector(".wrap");
+
+    const opt = {
+        margin: [15,20,15,20],
+        filename: "Report.pdf",
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            ignoreElements: (el) => el.classList && (el.classList.contains('copy-btn') || el.classList.contains('heading-anchor'))
+        },
+        jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+    };
+
+    html2pdf()
+        .set(opt)
+        .from(element)
+        .outputPdf("blob")
+        .then((blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            if (newWindow) {
+                newWindow.location.href = blobUrl;
+            }
+        })
+        .catch((err) => {
+            console.error("Error generating PDF:", err);
+            if (newWindow) newWindow.close();
+        })
+        .finally(() => {
+            link.classList.remove("is-busy");
+        });
+}
+</script>
+
+</body>
+</html>

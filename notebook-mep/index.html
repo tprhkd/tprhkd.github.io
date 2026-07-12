@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEP Electrical</title>
+<style>
+  :root{
+    --bg:#fafaf9;
+    --bg-raised:#f0f0ee;
+    --text:#161616;
+    --text-dim:#6e6e6e;
+    --text-faint:#a8a8a4;
+    --border:rgba(0,0,0,0.09);
+    --accent:#2f6fed;
+    --accent-dim:rgba(47,111,237,0.08);
+    --mono:'SF Mono','JetBrains Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+    font-size:14px;
+  }
+  a{color:inherit;text-decoration:none;}
+
+  .wrap{max-width:640px;margin:0 auto;padding:56px 20px 48px;}
+
+  /* ---------- header ---------- */
+  header.intro{padding-bottom:20px;}
+  header.intro .eyebrow{
+    font-family:var(--mono);font-size:11px;letter-spacing:0.06em;
+    color:var(--text-faint);text-transform:uppercase;margin:0 0 6px;
+  }
+  header.intro h1{font-size:20px;font-weight:600;margin:0 0 4px;letter-spacing:-0.01em;}
+  header.intro .role{color:var(--text-dim);font-size:12.5px;margin:0;}
+
+  /* ---------- quicknav chips ---------- */
+  .quicknav{
+    display:flex;flex-wrap:wrap;gap:6px;
+    padding:16px 0;border-top:1px solid var(--border);
+  }
+  .quicknav a{
+    font-family:var(--mono);font-size:11px;color:var(--text-dim);
+    border:1px solid var(--border);border-radius:5px;padding:3px 8px;
+    transition:border-color .15s ease,color .15s ease;
+  }
+  .quicknav a:hover{border-color:var(--accent);color:var(--accent);}
+  .quicknav a.appendix-chip{border-style:dashed;}
+
+  /* ---------- toolbar / filter ---------- */
+  .toolbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:6px 0 6px;border-top:1px solid var(--border);gap:16px;
+  }
+  .toolbar .label{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--text-dim);}
+  .toolbar svg{width:13px;height:13px;opacity:0.6;}
+  .filter-wrap{display:flex;align-items:center;gap:6px;}
+  .filter-wrap svg{width:12px;height:12px;color:var(--text-faint);}
+  #filter{
+    border:none;background:transparent;outline:none;
+    font-family:var(--sans);font-size:12.5px;color:var(--text);
+    width:130px;padding:2px 0;border-bottom:1px solid transparent;
+    transition:border-color .15s ease;
+  }
+  #filter::placeholder{color:var(--text-faint);}
+  #filter:focus{border-bottom-color:var(--accent);}
+  .kbd{
+    font-family:var(--mono);font-size:10px;color:var(--text-faint);
+    border:1px solid var(--border);border-radius:4px;padding:1px 5px;
+  }
+  #match-count{
+    font-family:var(--mono);font-size:10.5px;color:var(--text-faint);
+  }
+
+  /* ---------- chapters ---------- */
+  .chapter{padding-top:22px;scroll-margin-top:20px;}
+  .chapter.hidden{display:none;}
+  .chapter-header{
+    display:flex;align-items:baseline;gap:9px;
+    padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid var(--border);
+  }
+  .chapter-header .chip{
+    font-family:var(--mono);font-size:11px;color:var(--text-dim);
+    border:1px solid var(--border);border-radius:5px;padding:2px 7px;
+  }
+  .chapter-header h2{font-size:14.5px;font-weight:600;margin:0;letter-spacing:-0.01em;}
+  .chapter-header .count{
+    font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-left:auto;
+  }
+
+  .notes{display:flex;flex-direction:column;}
+  .note-row{
+    display:grid;grid-template-columns:46px 1fr;gap:14px;
+    padding:12px 0;border-top:1px solid var(--border);
+  }
+  .note-row.hidden{display:none;}
+  .chapter .notes .note-row:first-child{border-top:none;}
+  .note-row:hover .note-chip{border-color:var(--accent);color:var(--accent);}
+  .note-row:hover .note-topic{color:var(--accent);}
+  .note-chip{
+    font-family:var(--mono);font-size:10.5px;color:var(--text-faint);
+    border:1px solid var(--border);border-radius:5px;padding:2px 5px;
+    display:inline-flex;width:fit-content;height:fit-content;
+    transition:border-color .15s ease,color .15s ease;
+  }
+  .note-topic{font-size:13.5px;font-weight:600;margin:0 0 3px;transition:color .15s ease;display:flex;align-items:center;gap:5px;}
+  .note-topic svg{width:10px;height:10px;opacity:0.5;flex-shrink:0;}
+  .note-desc{font-size:12.5px;color:var(--text-dim);margin:0 0 6px;max-width:54ch;}
+  .note-tag{
+    font-family:var(--mono);font-size:10px;color:var(--text-faint);
+    display:inline-flex;align-items:center;gap:4px;
+  }
+
+  /* ---------- appendix ---------- */
+  .chapter.appendix{border-top:1px dashed var(--border);margin-top:8px;}
+  .chapter.appendix .chapter-header{border-bottom-style:dashed;}
+  .chapter.appendix .chapter-header .chip{border-style:dashed;}
+
+  .empty-state{
+    padding:32px 0;color:var(--text-faint);font-size:13px;
+    border-top:1px solid var(--border);display:none;
+  }
+  .empty-state.visible{display:block;}
+
+  @media (max-width:600px){
+    .note-row{grid-template-columns:1fr;gap:4px;}
+    .wrap{padding-top:40px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="intro">
+    <p class="eyebrow">1st Edition — 2026</p>
+    <h1>Electrical Engineering for Buildings</h1>
+  </header>
+
+  <div class="toolbar">
+    <div class="filter-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="filter" type="text" placeholder="filter notes…" autocomplete="off">
+      <span class="kbd">/</span>
+      <span id="match-count"></span>
+    </div>
+  </div>
+  <nav class="quicknav" id="quicknav"></nav>
+  <div id="chapters"></div>
+  <p class="empty-state" id="empty-state">No notes match "<span id="empty-query"></span>".</p>
+
+</div>
+
+<script>
+  // ============================================================
+  // EDIT EDIT EDIT — this is your table of contents.
+  // Every note here is one click away and renders straight from its
+  // .md file. Each note lives at  {href}index.html + {href}{slug}.md
+  // e.g. href "project-delivery/construction-industry/" contains
+  // index.html and construction-industry.md.
+  // ============================================================
+
+  const CHAPTERS = [
+    {id:"introduction",number:"0",title:"Introduction"},
+    {id:"project-delivery",number:"1",title:"Project Delivery"},
+    {id:"engineering-fundamentals",number:"2",title:"Engineering Fundamentals"},
+    {id:"design-fundamentals",number:"3",title:"Design Fundamentals"},
+    {id:"utility-services",number:"4",title:"Utility Services & Site Infrastructure"},
+    {id:"power-distribution",number:"5",title:"Power Distribution"},
+    {id:"lighting",number:"6",title:"Lighting Systems"},
+    {id:"building-systems",number:"7",title:"Building Systems"},
+    {id:"drawings",number:"8",title:"Drawings & Documentation"},
+    {id:"codes",number:"9",title:"Codes & Standards"},
+    {id:"applications",number:"10",title:"Project Applications"}
+  ];
+
+  // NOTES — each belongs to a chapter (section id matches CHAPTERS[*].id).
+  // "href" is a folder: e.g. "purpose/introduction/" contains index.html
+  // + introduction.md.
+  const NOTES = [
+    {section:"introduction",topic:"Author's Note",description:"Purpose of this handbook, its intended audience and scope.",href:"introduction/author/"},
+
+    {section:"project-delivery",topic:"The Construction Industry",description:"Stakeholders, project participants, and how the construction industry operates.",href:"project-delivery/construction-industry/"},
+    {section:"project-delivery",topic:"Project Lifecycle",description:"From concept design through commissioning and turnover.",href:"project-delivery/project-lifecycle/"},
+    {section:"project-delivery",topic:"Design Phases (SD, DD, CD, T, CA)",description:"Schematic Design, Design Development, Construction Documents, Tendering, and Construction Administration.",href:"project-delivery/design-phases/"},
+    {section:"project-delivery",topic:"Engineering Workflow",description:"Deliverables, design process, QA/QC and engineering judgement.",href:"project-delivery/engineering-workflow/"},
+    {section:"project-delivery",topic:"Site Investigation",description:"Field surveys, existing conditions assessment, and site constraints.",href:"project-delivery/site-investigation/"},
+    {section:"project-delivery",topic:"Coordination",description:"Architectural, mechanical, structural, civil, and utility coordination.",href:"project-delivery/coordination/"},
+    {section:"project-delivery",topic:"Drawings & Documentation",description:"Plans, schedules, specifications and construction documents overview.",href:"project-delivery/drawings-and-documentation/"},
+    {section:"project-delivery",topic:"Permit & AHJ Process",description:"Permit submissions, utility approvals and AHJ requirements.",href:"project-delivery/permits-and-authorities/"},
+    {section:"project-delivery",topic:"Construction Administration",description:"Shop drawings, submittals, site reviews, commissioning and closeout.",href:"project-delivery/construction-administration/"},
+
+    {section:"engineering-fundamentals",topic:"Electrical Theory",description:"Ohm's law, power, energy, and basic circuit concepts.",href:"engineering-fundamentals/electrical-theory/"},
+    {section:"engineering-fundamentals",topic:"AC Power Systems",description:"Alternating current, waveforms, frequency, and power factor.",href:"engineering-fundamentals/ac-power-systems/"},
+    {section:"engineering-fundamentals",topic:"Three Phase Systems",description:"Wye and delta configurations, phase voltages, and balanced loads.",href:"engineering-fundamentals/three-phase-systems/"},
+    {section:"engineering-fundamentals",topic:"Building Electrical Systems",description:"Overview of electrical distribution within buildings.",href:"engineering-fundamentals/building-electrical-systems/"},
+    {section:"engineering-fundamentals",topic:"Design Philosophy",description:"Approaches to reliable, safe, and cost-effective electrical design.",href:"engineering-fundamentals/design-philosophy/"},
+    {section:"engineering-fundamentals",topic:"Reliability",description:"Redundancy, backup systems, and fault tolerance.",href:"engineering-fundamentals/reliability/"},
+    {section:"engineering-fundamentals",topic:"Energy Efficiency",description:"Strategies for reducing energy consumption and improving performance.",href:"engineering-fundamentals/energy-efficiency/"},
+    {section:"engineering-fundamentals",topic:"Constructability",description:"Designing for ease of installation and construction sequencing.",href:"engineering-fundamentals/constructability/"},
+    {section:"engineering-fundamentals",topic:"Maintainability",description:"Access, serviceability, and long-term maintenance considerations.",href:"engineering-fundamentals/maintainability/"},
+
+    {section:"design-fundamentals",topic:"Design Workflow",description:"Step-by-step process from concept to final design.",href:"design-fundamentals/design-workflow/"},
+    {section:"design-fundamentals",topic:"Existing Conditions",description:"Gathering and assessing existing electrical infrastructure.",href:"design-fundamentals/existing-conditions/"},
+    {section:"design-fundamentals",topic:"Design Criteria",description:"Project-specific parameters and performance requirements.",href:"design-fundamentals/design-criteria/"},
+    {section:"design-fundamentals",topic:"Load Calculations",description:"Connected loads, demand loads and service calculations.",href:"design-fundamentals/load-calculations/"},
+    {section:"design-fundamentals",topic:"Demand Factors",description:"Understanding realistic building loading conditions.",href:"design-fundamentals/demand-factors/"},
+    {section:"design-fundamentals",topic:"Voltage Drop",description:"Conductor sizing and voltage drop limitations.",href:"design-fundamentals/voltage-drop/"},
+    {section:"design-fundamentals",topic:"Fault Current",description:"Available fault current and equipment ratings.",href:"design-fundamentals/fault-current/"},
+    {section:"design-fundamentals",topic:"Equipment Selection",description:"Choosing appropriate electrical equipment for the application.",href:"design-fundamentals/equipment-selection/"},
+    {section:"design-fundamentals",topic:"Design Coordination",description:"Integrating electrical design with other disciplines.",href:"design-fundamentals/design-coordination/"},
+    {section:"design-fundamentals",topic:"QA/QC",description:"Quality assurance and quality control procedures.",href:"design-fundamentals/qa-qc/"},
+
+    {section:"utility-services",topic:"Utility Coordination",description:"Working with utility providers for service planning.",href:"utility-services/utility-coordination/"},
+    {section:"utility-services",topic:"Service Entrance",description:"Service equipment, metering and utility requirements.",href:"utility-services/service-entrance/"},
+    {section:"utility-services",topic:"Metering",description:"Utility metering and sub-metering strategies.",href:"utility-services/metering/"},
+    {section:"utility-services",topic:"Transformers",description:"Sizing, selection and practical applications.",href:"utility-services/transformers/"},
+    {section:"utility-services",topic:"Grounding",description:"Building grounding systems and grounding electrodes.",href:"utility-services/grounding/"},
+    {section:"utility-services",topic:"Bonding",description:"Equipment bonding and system bonding fundamentals.",href:"utility-services/bonding/"},
+    {section:"utility-services",topic:"Surge Protection",description:"Protecting systems against transient events.",href:"utility-services/surge-protection/"},
+
+    {section:"power-distribution",topic:"Distribution Philosophy",description:"Approaches to designing reliable and efficient distribution.",href:"power-distribution/distribution-philosophy/"},
+    {section:"power-distribution",topic:"Switchboards",description:"Main service equipment and distribution architecture.",href:"power-distribution/switchgear/"},
+    {section:"power-distribution",topic:"Distribution Panels",description:"Secondary distribution panels and their applications.",href:"power-distribution/distribution-panels/"},
+    {section:"power-distribution",topic:"Panelboards",description:"Branch circuit distribution and panel schedules.",href:"power-distribution/panelboards/"},
+    {section:"power-distribution",topic:"Feeders",description:"Ampacity, derating and routing considerations.",href:"power-distribution/feeders/"},
+    {section:"power-distribution",topic:"Branch Circuits",description:"Design and protection of branch circuits.",href:"power-distribution/branch-circuits/"},
+    {section:"power-distribution",topic:"Receptacles",description:"Receptacle placement, types, and loading.",href:"power-distribution/receptacles/"},
+    {section:"power-distribution",topic:"Equipment Connections",description:"Permanent and plug-in connections for mechanical and specialty equipment.",href:"power-distribution/equipment-connections/"},
+
+    {section:"lighting",topic:"Lighting Design",description:"Illuminance, efficacy and lighting metrics.",href:"lighting/fundamentals/"},
+    {section:"lighting",topic:"Fixture Selection",description:"Choosing appropriate luminaires for various applications.",href:"lighting/fixture-selection/"},
+    {section:"lighting",topic:"Lighting Controls",description:"Occupancy sensors, daylighting and control systems.",href:"lighting/controls/"},
+    {section:"lighting",topic:"Emergency Lighting",description:"Life safety lighting and exit signage requirements.",href:"lighting/emergency-lighting/"},
+    {section:"lighting",topic:"Exit Signs",description:"Design and placement of illuminated exit signs.",href:"lighting/exit-signs/"},
+    {section:"lighting",topic:"Exterior Lighting",description:"Site, façade, and parking lot lighting.",href:"lighting/exterior-lighting/"},
+
+    {section:"building-systems",topic:"HVAC Equipment",description:"Electrical requirements for heating, ventilation, and air conditioning.",href:"building-systems/hvac-equipment/"},
+    {section:"building-systems",topic:"Fire Alarm",description:"System architecture, devices and notification circuits.",href:"building-systems/fire-alarm/"},
+    {section:"building-systems",topic:"Communications",description:"Telecommunications and data infrastructure.",href:"building-systems/communications/"},
+    {section:"building-systems",topic:"Security",description:"Intrusion detection and security system design.",href:"building-systems/security/"},
+    {section:"building-systems",topic:"Access Control",description:"Electronic door access and credential management.",href:"building-systems/access-control/"},
+    {section:"building-systems",topic:"CCTV",description:"Video surveillance system design and placement.",href:"building-systems/cctv/"},
+    {section:"building-systems",topic:"EV Charging",description:"Electric vehicle supply equipment and infrastructure.",href:"building-systems/ev-charging/"},
+    {section:"building-systems",topic:"Solar PV",description:"Photovoltaic system integration and interconnection.",href:"building-systems/solar-pv/"},
+    {section:"building-systems",topic:"Battery Storage",description:"Energy storage systems and their electrical integration.",href:"building-systems/battery-storage/"},
+
+    {section:"drawings",topic:"Drawing Standards",description:"Industry standards for drawing formats and layering.",href:"drawings/drawing-standards/"},
+    {section:"drawings",topic:"Symbols",description:"Electrical symbol libraries and usage.",href:"drawings/symbols/"},
+    {section:"drawings",topic:"General Notes",description:"Standard notes and project-specific notes on drawings.",href:"drawings/general-notes/"},
+    {section:"drawings",topic:"Electrical Plans",description:"Floor plans showing device locations and circuitry.",href:"drawings/electrical-plans/"},
+    {section:"drawings",topic:"Single Line Diagrams",description:"One-line diagrams for distribution and protection.",href:"drawings/single-line-diagrams/"},
+    {section:"drawings",topic:"Panel Schedules",description:"Formatting and populating panel schedule tables.",href:"drawings/panel-schedules/"},
+    {section:"drawings",topic:"Riser Diagrams",description:"Vertical distribution diagrams for multi-floor buildings.",href:"drawings/riser-diagrams/"},
+    {section:"drawings",topic:"Electrical Details",description:"Installation details for devices, conduit, and equipment.",href:"drawings/electrical-details/"},
+    {section:"drawings",topic:"Specifications",description:"Written technical specifications for electrical work.",href:"drawings/specifications/"},
+
+    {section:"codes",topic:"Canadian Electrical Code",description:"CEC requirements and adoption in construction.",href:"codes/canadian-electrical-code/"},
+    {section:"codes",topic:"Building Code",description:"National and provincial building code requirements.",href:"codes/building-code/"},
+    {section:"codes",topic:"Energy Code",description:"Energy efficiency standards for electrical systems.",href:"codes/energy-code/"},
+    {section:"codes",topic:"Fire Code",description:"Fire safety and life safety code provisions.",href:"codes/fire-code/"},
+    {section:"codes",topic:"Utility Standards",description:"Service provider technical requirements.",href:"codes/utility-standards/"},
+    {section:"codes",topic:"Manufacturer Standards",description:"Equipment-specific installation guidelines.",href:"codes/manufacturer-standards/"},
+    {section:"codes",topic:"Engineering Best Practices",description:"Recommended practices beyond minimum code.",href:"codes/engineering-best-practices/"},
+
+    {section:"applications",topic:"Residential - Typical Service Design",description:"Standard service sizes and configurations for homes.",href:"applications/residential-typical-service/"},
+    {section:"applications",topic:"Residential - Kitchen Circuits",description:"Dedicated circuits for kitchen appliances.",href:"applications/residential-kitchen-circuits/"},
+    {section:"applications",topic:"Residential - Bathroom Circuits",description:"GFCI and dedicated bathroom receptacles.",href:"applications/residential-bathroom-circuits/"},
+    {section:"applications",topic:"Residential - EV Chargers",description:"Design and installation of residential EVSE.",href:"applications/residential-ev-chargers/"},
+    {section:"applications",topic:"Residential - Heat Pumps",description:"Electrical provisions for heat pump systems.",href:"applications/residential-heat-pumps/"},
+    {section:"applications",topic:"Residential - Suites",description:"Separate metering and distribution for secondary suites.",href:"applications/residential-suites/"},
+    {section:"applications",topic:"Residential - Renovations",description:"Upgrading existing electrical systems during remodels.",href:"applications/residential-renovations/"},
+    {section:"applications",topic:"Tenant Improvements - Existing Buildings",description:"Working with existing infrastructure and constraints.",href:"applications/ti-existing-buildings/"},
+    {section:"applications",topic:"Tenant Improvements - Existing Panels",description:"Assessing and extending existing panel capacity.",href:"applications/ti-existing-panels/"},
+    {section:"applications",topic:"Tenant Improvements - Circuit Tracing",description:"Identifying and mapping existing circuits.",href:"applications/ti-circuit-tracing/"},
+    {section:"applications",topic:"Tenant Improvements - Office TI",description:"Electrical design for office fit-outs.",href:"applications/ti-office/"},
+    {section:"applications",topic:"Tenant Improvements - Retail TI",description:"Electrical design for retail spaces.",href:"applications/ti-retail/"},
+    {section:"applications",topic:"Tenant Improvements - Restaurant TI",description:"Kitchen power, lighting, and special equipment.",href:"applications/ti-restaurant/"},
+    {section:"applications",topic:"Tenant Improvements - Medical TI",description:"Electrical requirements for clinics and medical offices.",href:"applications/ti-medical/"},
+    {section:"applications",topic:"Tenant Improvements - Demolition",description:"Safe demolition and temporary power during renovation.",href:"applications/ti-demolition/"},
+    {section:"applications",topic:"Tenant Improvements - Lease Requirements",description:"Coordinating with landlord and tenant specifications.",href:"applications/ti-lease-requirements/"}
+  ];
+
+  // ============================================================
+  // EDIT: Appendix — external resources only, tagged to the chapter
+  // they're most useful for. "url" should be a real link out to the
+  // resource (spec sheet, code book, template library, etc.) — these
+  // open in a new tab rather than rendering a local .md page.
+  // ============================================================
+  const REFERENCES = [
+    {topic:"Calculation Guidelines",description:"Methods and formulas for common electrical calculations.",relatedChapter:"design-fundamentals",url:"#"},
+    {topic:"Design Checklists",description:"Project and discipline-specific design checklists.",relatedChapter:"project-delivery",url:"#"},
+    {topic:"Typical Details",description:"Standard installation details for reference.",relatedChapter:"drawings",url:"#"},
+    {topic:"Drawing Templates",description:"CAD and BIM templates for electrical drawings.",relatedChapter:"drawings",url:"#"},
+    {topic:"Manufacturer References",description:"Common equipment specifications and cutsheets.",relatedChapter:"power-distribution",url:"#"},
+    {topic:"Lessons Learned",description:"Common pitfalls and best practices from past projects.",relatedChapter:"project-delivery",url:"#"}
+  ];
+
+  // ============================================================
+  // Rendering — no need to edit below this line.
+  // ============================================================
+
+  const quicknav = document.getElementById('quicknav');
+  const chaptersEl = document.getElementById('chapters');
+  const chapterById = Object.fromEntries(CHAPTERS.map(c => [c.id, c]));
+
+  CHAPTERS.forEach(ch => {
+    const navChip = document.createElement('a');
+    navChip.href = `#${ch.id}`;
+    navChip.textContent = ch.number;
+    navChip.title = ch.title;
+    quicknav.appendChild(navChip);
+
+    const notesForChapter = NOTES.filter(n => n.section === ch.id);
+
+    const section = document.createElement('section');
+    section.className = 'chapter';
+    section.id = ch.id;
+
+    const header = document.createElement('div');
+    header.className = 'chapter-header';
+    header.innerHTML = `
+      <span class="chip">${ch.number}</span>
+      <h2>${ch.title}</h2>
+      <span class="count">${notesForChapter.length} note${notesForChapter.length === 1 ? '' : 's'}</span>
+    `;
+    section.appendChild(header);
+
+    const notesWrap = document.createElement('div');
+    notesWrap.className = 'notes';
+
+    notesForChapter.forEach((note, i) => {
+      const row = document.createElement('a');
+      row.className = 'note-row';
+      row.href = note.href;
+      row.dataset.search = `${ch.title} ${note.topic} ${note.description}`.toLowerCase();
+      row.innerHTML = `
+        <span class="note-chip">${ch.number}.${i + 1}</span>
+        <div>
+          <p class="note-topic">${note.topic}</p>
+          <p class="note-desc">${note.description}</p>
+        </div>
+      `;
+      notesWrap.appendChild(row);
+    });
+
+    section.appendChild(notesWrap);
+    chaptersEl.appendChild(section);
+  });
+
+  // ---------- appendix ----------
+  const appendixChip = document.createElement('a');
+  appendixChip.href = '#appendix';
+  appendixChip.textContent = 'A';
+  appendixChip.title = 'Appendix — Reference';
+  appendixChip.className = 'appendix-chip';
+  quicknav.appendChild(appendixChip);
+
+  const appendixSection = document.createElement('section');
+  appendixSection.className = 'chapter appendix';
+  appendixSection.id = 'appendix';
+  appendixSection.innerHTML = `
+    <div class="chapter-header">
+      <span class="chip">A</span>
+      <h2>Appendix — Reference</h2>
+      <span class="count">${REFERENCES.length} link${REFERENCES.length === 1 ? '' : 's'}</span>
+    </div>
+  `;
+  const refWrap = document.createElement('div');
+  refWrap.className = 'notes';
+
+  REFERENCES.forEach((ref, i) => {
+    const relChapter = chapterById[ref.relatedChapter];
+    const row = document.createElement('a');
+    row.className = 'note-row';
+    row.href = ref.url;
+    row.target = '_blank';
+    row.rel = 'noopener noreferrer';
+    row.dataset.search = `${ref.topic} ${ref.description} ${relChapter ? relChapter.title : ''}`.toLowerCase();
+    row.innerHTML = `
+      <span class="note-chip">A.${i + 1}</span>
+      <div>
+        <p class="note-topic">
+          ${ref.topic}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M7 7h10v10"/></svg>
+        </p>
+        <p class="note-desc">${ref.description}</p>
+        ${relChapter ? `<span class="note-tag">→ ${relChapter.title}</span>` : ''}
+      </div>
+    `;
+    refWrap.appendChild(row);
+  });
+
+  appendixSection.appendChild(refWrap);
+  chaptersEl.appendChild(appendixSection);
+
+  // ---------- filter ----------
+  const filter = document.getElementById('filter');
+  const matchCount = document.getElementById('match-count');
+  const emptyState = document.getElementById('empty-state');
+  const emptyQuery = document.getElementById('empty-query');
+  const allRows = Array.from(document.querySelectorAll('.note-row'));
+  const allChapters = Array.from(document.querySelectorAll('.chapter'));
+
+  filter.addEventListener('input', () => {
+    const q = filter.value.trim().toLowerCase();
+    let visible = 0;
+
+    allRows.forEach(row => {
+      const match = row.dataset.search.includes(q);
+      row.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+
+    allChapters.forEach(section => {
+      const anyVisible = section.querySelector('.note-row:not(.hidden)');
+      section.classList.toggle('hidden', q.length > 0 && !anyVisible);
+    });
+
+    matchCount.textContent = q.length > 0 ? `${visible} match${visible === 1 ? '' : 'es'}` : '';
+    emptyState.classList.toggle('visible', visible === 0 && q.length > 0);
+    emptyQuery.textContent = filter.value;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== filter) {
+      e.preventDefault();
+      filter.focus();
+    } else if (e.key === 'Escape' && document.activeElement === filter) {
+      filter.value = '';
+      filter.dispatchEvent(new Event('input'));
+      filter.blur();
+    }
+  });
+</script>
+
+</body>
+</html>

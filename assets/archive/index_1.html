@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Notebook II</title>
+<title>MEP Electrical</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap">
 
 <!-- ============================================================
@@ -38,12 +38,19 @@ const CHAPTERS = [
 
 const NOTES = [
 
+  {
+    section: "purpose",
+    topic: "Purpose & Introduction",
+    description: "An introduction to the handbook, its intended audience, scope, organization, and the author's background.",
+    href: "purpose/introduction.html"
+  },
+
   // ===== 1. Project Delivery =====
   {
     section: "project-delivery",
     topic: "The Construction Industry",
     description: "Stakeholders, project participants, and how the construction industry operates.",
-    href: "1.1/index.html"
+    href: "project-delivery/construction-industry.html"
   },
   {
     section: "project-delivery",
@@ -648,11 +655,11 @@ const NOTES = [
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    max-width: 700px;
-    margin: 70px auto;
+    max-width: 650px;
+    margin: 40px auto;
     padding: 0 20px;
     font: 12px/1.7 Inter, sans-serif;
-    background: #fff;
+    background:#fff;
     color: #111;
   }
 

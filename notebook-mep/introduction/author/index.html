@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- EDIT: page title -->
+<title>Note title — MEP Electrical</title>
+
+<!-- markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<!-- math (rendered manually — see script below — so no auto-render bundle needed) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<!-- code blocks -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<!-- pdf export -->
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+
+<style>
+  :root{
+    --bg:#fafaf9;
+    --bg-raised:#f0f0ee;
+    --bg-code:#f5f5f4;
+    --text:#161616;
+    --text-dim:#6e6e6e;
+    --text-faint:#a8a8a4;
+    --border:rgba(0,0,0,0.09);
+    --accent:#2f6fed;
+    --mono:'SF Mono','JetBrains Mono',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--text);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;line-height:1.6;font-size:14px;
+  }
+  a{color:var(--accent);text-underline-offset:3px;}
+  .wrap{max-width:600px;margin:0 auto;padding:48px 20px 64px;}
+
+  #progress{
+    position:fixed;top:0;left:0;height:2px;width:0%;
+    background:var(--accent);z-index:50;transition:width .1s linear;
+  }
+
+  /* ---------- top bar: crumbs + pdf button ---------- */
+  .topbar{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    gap:16px;margin-bottom:24px;
+  }
+  .crumbs{
+    font-family:var(--mono);font-size:11px;color:var(--text-faint);
+    display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-top:4px;
+  }
+  .crumbs a{color:var(--text-dim);text-decoration:none;}
+  .crumbs a:hover{color:var(--accent);}
+  .pdf-btn{
+    display:flex;align-items:center;gap:5px;flex-shrink:0;
+    font-family:var(--mono);font-size:11px;color:var(--text-dim);
+    background:var(--bg-raised);border:1px solid var(--border);border-radius:6px;
+    padding:5px 9px;cursor:pointer;white-space:nowrap;
+    transition:color .15s ease,border-color .15s ease;
+  }
+  .pdf-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .pdf-btn svg{width:12px;height:12px;}
+  .pdf-btn.is-busy{opacity:0.5;cursor:wait;}
+
+  header.chapter-head{
+    padding-bottom:20px;border-bottom:1px solid var(--border);margin-bottom:8px;
+  }
+  header.chapter-head a.chapter-link{
+    display:inline-flex;align-items:center;gap:10px;color:inherit;text-decoration:none;
+  }
+  header.chapter-head a.chapter-link:hover .chapter-name{color:var(--accent);}
+  header.chapter-head a.chapter-link:hover .chip{border-color:var(--accent);color:var(--accent);}
+  header.chapter-head .chip{
+    font-family:var(--mono);font-size:11px;color:var(--text-dim);
+    border:1px solid var(--border);border-radius:5px;padding:2px 7px;flex-shrink:0;
+    transition:color .15s ease,border-color .15s ease;
+  }
+  header.chapter-head .chapter-name{font-size:13px;font-weight:500;color:var(--text-dim);transition:color .15s ease;}
+
+  #on-this-page{
+    margin:24px 0 32px;padding:12px 14px;
+    border:1px solid var(--border);border-radius:8px;
+    background:var(--bg-raised);font-size:12px;
+  }
+  #on-this-page .otp-label{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.04em;
+    text-transform:uppercase;color:var(--text-faint);margin-bottom:6px;
+  }
+  #on-this-page ul{list-style:none;margin:0;padding:0;}
+  #on-this-page li{margin:3px 0;}
+  #on-this-page a{color:var(--text-dim);text-decoration:none;}
+  #on-this-page a:hover{color:var(--accent);}
+  #on-this-page li.lvl3{padding-left:14px;}
+
+  #rendered-content{font-size:14px;}
+  #rendered-content h1,#rendered-content h2,#rendered-content h3{
+    font-weight:600;letter-spacing:-0.01em;margin:1.6em 0 0.6em;scroll-margin-top:24px;
+  }
+  #rendered-content h1{font-size:20px;}
+  #rendered-content h2{font-size:16px;padding-top:0.5em;border-top:1px solid var(--border);}
+  #rendered-content h3{font-size:14px;color:#2a2a2a;}
+  #rendered-content h1:first-child,#rendered-content h2:first-child{margin-top:0;border-top:none;padding-top:0;}
+  #rendered-content .heading-anchor{
+    opacity:0;margin-left:6px;font-weight:400;color:var(--text-faint);
+    text-decoration:none;font-size:0.8em;transition:opacity .1s ease;
+  }
+  #rendered-content h1:hover .heading-anchor,
+  #rendered-content h2:hover .heading-anchor,
+  #rendered-content h3:hover .heading-anchor{opacity:1;}
+
+  #rendered-content p{margin:0 0 1em;color:#2c2c2c;}
+  #rendered-content strong{color:var(--text);}
+  #rendered-content ul,#rendered-content ol{margin:0 0 1em;padding-left:1.3em;color:#2c2c2c;}
+  #rendered-content li{margin:0.3em 0;}
+  #rendered-content img{
+    max-width:100%;border-radius:8px;border:1px solid var(--border);margin:1.2em 0;display:block;
+  }
+  #rendered-content blockquote{
+    margin:1.2em 0;padding:2px 16px;border-left:2px solid var(--accent);color:var(--text-dim);
+  }
+  #rendered-content code{
+    font-family:var(--mono);font-size:0.85em;background:var(--bg-code);
+    border:1px solid var(--border);border-radius:4px;padding:0.15em 0.4em;
+  }
+  #rendered-content pre{
+    position:relative;background:var(--bg-code);border:1px solid var(--border);
+    border-radius:8px;padding:14px;overflow-x:auto;margin:1.2em 0;
+  }
+  #rendered-content pre code{background:none;border:none;padding:0;font-size:0.82em;line-height:1.55;}
+  .copy-btn{
+    position:absolute;top:8px;right:8px;
+    font-family:var(--mono);font-size:10px;color:var(--text-faint);
+    background:var(--bg);border:1px solid var(--border);border-radius:5px;
+    padding:3px 7px;cursor:pointer;opacity:0;transition:opacity .12s ease,color .12s ease;
+  }
+  #rendered-content pre:hover .copy-btn{opacity:1;}
+  .copy-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .copy-btn.copied{color:var(--accent);border-color:var(--accent);}
+
+  #rendered-content table{width:100%;border-collapse:collapse;margin:1.2em 0;font-size:0.88em;}
+  #rendered-content th,#rendered-content td{border:1px solid var(--border);padding:7px 10px;text-align:left;}
+  #rendered-content th{color:var(--text-dim);font-weight:600;background:var(--bg-raised);}
+  #rendered-content hr{border:none;border-top:1px solid var(--border);margin:2em 0;}
+  #rendered-content .katex-display{overflow-x:auto;overflow-y:hidden;padding:4px 0;}
+  #rendered-content .katex{font-size:1em;}
+
+  .error{
+    border:1px solid rgba(220,50,50,0.25);background:rgba(220,50,50,0.05);
+    border-radius:8px;padding:14px 16px;color:#b23434;font-size:13px;
+  }
+
+  @media (max-width:600px){
+    .wrap{padding-top:32px;}
+    .topbar{flex-direction:column;align-items:stretch;}
+  }
+  @media print{.pdf-btn,#progress,#on-this-page{display:none;}}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <!--
+      EDIT: this page lives two folders below the homepage —
+      {chapter}/{note-slug}/index.html — so home is always "../../"
+      no matter which note this is.
+    -->
+    <div class="crumbs">
+      <a href="../../">MEP Electrical</a>
+      <span>/</span><span>Introduction</span><span>/</span><span>Author's Note</span>
+    </div>
+    <button id="pdf-link" class="pdf-btn" onclick="generatePDF(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9V2h9l5 5v2"/><path d="M6 22h11a2 2 0 0 0 2-2v-8H6z"/><path d="M14 2v5h5"/></svg>
+      Download PDF
+    </button>
+  </div>
+
+  <div id="on-this-page" style="display:none;">
+    <p class="otp-label">on this page</p>
+    <ul id="otp-list"></ul>
+  </div>
+
+  <div id="rendered-content">
+    <p style="color:var(--text-faint);">Loading…</p>
+  </div>
+
+</div>
+
+<script>
+(async () => {
+    const output = document.getElementById("rendered-content");
+
+    try {
+        // ---- resolve this note's folder + matching .md filename ----
+        // Works whether the URL shows "index.html" explicitly or a
+        // clean trailing-slash folder route (GitHub Pages, Vercel, etc).
+        let base = window.location.href.split(/[?#]/)[0];
+        if (base.endsWith('index.html')) {
+            base = base.slice(0, -'index.html'.length);
+        } else if (!base.endsWith('/')) {
+            base += '/';
+        }
+        const folderParts = base.split('/').filter(Boolean);
+        const slug = folderParts[folderParts.length - 1]; // e.g. "construction-industry"
+        const MD_PATH = `${slug}.md`;
+        const resolvedUrl = new URL(MD_PATH, base).toString();
+
+        const response = await fetch(resolvedUrl, { cache: 'no-store' });
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status} fetching "${resolvedUrl}".\n` +
+                `Common causes: (1) the .md file isn't named to match this ` +
+                `folder exactly (including case) — expected "${MD_PATH}"; ` +
+                `(2) on GitHub Pages, Jekyll can intercept .md files — add ` +
+                `an empty ".nojekyll" file at your repo root; ` +
+                `(3) the .md file wasn't deployed alongside index.html.`
+            );
+        }
+
+        const markdown = await response.text();
+
+        if (!markdown.trim()) {
+            output.innerHTML = `
+                <p style="padding:32px 0;color:var(--text-faint);">
+                    The markdown file is empty.
+                </p>
+            `;
+            return;
+        }
+
+        // ---- protect math from markdown mangling, then restore + render ----
+        // Markdown parsers treat _ and * as emphasis and can garble raw
+        // LaTeX (e.g. "x_1^2") before KaTeX ever sees it. So: pull out
+        // $$...$$ and $...$ segments first, parse markdown on the rest,
+        // then drop rendered KaTeX back in by index. \u0000 is used as a
+        // delimiter because it can't appear in normal note content.
+        const mathStore = [];
+        let protectedMarkdown = markdown.replace(/\$\$([\s\S]+?)\$\$/g, (_, expr) => {
+            mathStore.push({ expr: expr.trim(), display: true });
+            return `\u0000MATH${mathStore.length - 1}\u0000`;
+        });
+        protectedMarkdown = protectedMarkdown.replace(/\$([^\$\n]+?)\$/g, (_, expr) => {
+            mathStore.push({ expr: expr.trim(), display: false });
+            return `\u0000MATH${mathStore.length - 1}\u0000`;
+        });
+
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false,
+            sanitize: false
+        });
+
+        let html = marked.parse(protectedMarkdown);
+
+        html = html.replace(/\u0000MATH(\d+)\u0000/g, (_, i) => {
+            const { expr, display } = mathStore[Number(i)];
+            if (!window.katex) return expr;
+            try {
+                return katex.renderToString(expr, { throwOnError: false, displayMode: display });
+            } catch (err) {
+                console.warn('KaTeX render failed for:', expr, err);
+                return `<code>${expr}</code>`;
+            }
+        });
+
+        output.innerHTML = html;
+
+        // Syntax-highlight code blocks + add copy buttons
+        output.querySelectorAll('pre code').forEach((block) => {
+            if (window.hljs) hljs.highlightElement(block);
+            const pre = block.parentElement;
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.type = 'button';
+            btn.textContent = 'copy';
+            btn.addEventListener('click', () => {
+                navigator.clipboard.writeText(block.textContent).then(() => {
+                    btn.textContent = 'copied';
+                    btn.classList.add('copied');
+                    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1200);
+                });
+            });
+            pre.appendChild(btn);
+        });
+
+        // Slugify + link headings, build "on this page" outline
+        const slugCounts = {};
+        const headings = Array.from(output.querySelectorAll('h2, h3'));
+        if (headings.length >= 2) {
+            const otpList = document.getElementById('otp-list');
+            headings.forEach((h) => {
+                let hSlug = h.textContent.trim().toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-');
+                if (slugCounts[hSlug] != null) {
+                    slugCounts[hSlug]++;
+                    hSlug = `${hSlug}-${slugCounts[hSlug]}`;
+                } else {
+                    slugCounts[hSlug] = 0;
+                }
+                h.id = hSlug;
+
+                const anchor = document.createElement('a');
+                anchor.href = `#${hSlug}`;
+                anchor.className = 'heading-anchor';
+                anchor.textContent = '#';
+                h.appendChild(anchor);
+
+                const li = document.createElement('li');
+                if (h.tagName === 'H3') li.className = 'lvl3';
+                const link = document.createElement('a');
+                link.href = `#${hSlug}`;
+                link.textContent = h.textContent.replace('#', '').trim();
+                li.appendChild(link);
+                otpList.appendChild(li);
+            });
+            document.getElementById('on-this-page').style.display = 'block';
+        }
+
+        const firstHeading = output.querySelector('h1, h2');
+        if (firstHeading) document.title = firstHeading.textContent.replace('#', '').trim() + ' — MEP Electrical';
+
+    } catch (error) {
+        console.error('Error loading markdown:', error);
+        output.innerHTML = `
+            <div class="error">
+                <p><strong>Error loading content</strong></p>
+                <p style="margin-top:8px;font-size:12px;color:#b23434;white-space:pre-wrap;">
+                    ${error.message}
+                </p>
+            </div>
+        `;
+    }
+})();
+
+// Reading progress bar
+(() => {
+    const bar = document.getElementById('progress');
+    const update = () => {
+        const h = document.documentElement;
+        const scrolled = h.scrollTop;
+        const height = h.scrollHeight - h.clientHeight;
+        bar.style.width = height > 0 ? `${(scrolled / height) * 100}%` : '0%';
+    };
+    document.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+})();
+
+function generatePDF(e) {
+    e.preventDefault();
+
+    const link = document.getElementById("pdf-link");
+    link.classList.add("is-busy");
+
+    const newWindow = window.open("", "_blank");
+    const element = document.querySelector(".wrap");
+
+    const opt = {
+        margin: [15,20,15,20],
+        filename: "Report.pdf",
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            ignoreElements: (el) => el.id === 'pdf-link' || (el.classList && (el.classList.contains('copy-btn') || el.classList.contains('heading-anchor')))
+        },
+        jsPDF: { unit: "mm", format: "letter", orientation: "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+    };
+
+    html2pdf()
+        .set(opt)
+        .from(element)
+        .outputPdf("blob")
+        .then((blob) => {
+            const blobUrl = URL.createObjectURL(blob);
+            if (newWindow) {
+                newWindow.location.href = blobUrl;
+            }
+        })
+        .catch((err) => {
+            console.error("Error generating PDF:", err);
+            if (newWindow) newWindow.close();
+        })
+        .finally(() => {
+            link.classList.remove("is-busy");
+        });
+}
+</script>
+
+</body>
+</html>
